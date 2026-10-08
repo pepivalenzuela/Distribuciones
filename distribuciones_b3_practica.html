@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.3 Práctica — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema1_intro.html">Tema 1</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_b3_intro.html">Bloque 3</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 3 · Práctica libre</span>
+    <h1>Esperanza matemática</h1>
+    <p>Ejercicios aleatorios de teoría (esperanza matemática, interpretación) y de aplicación (cálculo de E(X) en juegos y contextos reales). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_b3_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_b4_intro.html">Bloque 4 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué representa la esperanza matemática E(X) de una variable aleatoria?",
+  "o": [
+   "El valor medio que se obtendría si se repitiera el experimento muchísimas veces",
+   "El valor más probable de X",
+   "El valor máximo que puede tomar X",
+   "La probabilidad de que X sea positiva"
+  ],
+  "c": 0,
+  "e": "E(X) es el valor medio que obtendrías a la larga si repitieras el experimento muchísimas veces. No tiene por qué ser el valor más probable ni el máximo."
+ },
+ {
+  "q": "¿Cuál es la fórmula de la esperanza matemática de una variable discreta?",
+  "o": [
+   "E(X) = Σ xᵢ·P(X=xᵢ)",
+   "E(X) = Σ P(X=xᵢ)",
+   "E(X) = Σ xᵢ / n",
+   "E(X) = máx(xᵢ)"
+  ],
+  "c": 0,
+  "e": "E(X) = Σ xᵢ·P(X = xᵢ): cada valor se multiplica por su probabilidad y se suma. Σ P(X = xᵢ) siempre da 1, así que no es la media."
+ },
+ {
+  "q": "¿Puede la esperanza matemática de X tomar un valor que X nunca toma realmente?",
+  "o": [
+   "Sí, es habitual (por ejemplo la media de un dado es 3.5)",
+   "No, E(X) siempre coincide con algún valor de X",
+   "Solo si X es continua",
+   "Solo si todas las probabilidades son iguales"
+  ],
+  "c": 0,
+  "e": "Sí: en un dado, E(X) = 3.5 y el dado nunca saca 3.5. La esperanza es un promedio, no un resultado posible."
+ },
+ {
+  "q": "Si todos los valores de X son positivos, ¿puede E(X) ser negativa?",
+  "o": [
+   "No, si todos los valores y probabilidades son positivos, E(X) también lo es",
+   "Sí, siempre que haya muchos valores",
+   "Sí, si la varianza es grande",
+   "Depende del número de valores"
+  ],
+  "c": 0,
+  "e": "Si todos los xᵢ son positivos, cada producto xᵢ·P(X = xᵢ) es ≥ 0, así que su suma E(X) no puede ser negativa."
+ },
+ {
+  "q": "¿Qué significa que un juego tenga esperanza matemática igual a 0?",
+  "o": [
+   "Que, a largo plazo, el jugador ni gana ni pierde de media (juego equilibrado)",
+   "Que el jugador siempre pierde",
+   "Que el juego es imposible de jugar",
+   "Que todas las probabilidades son 0"
+  ],
+  "c": 0,
+  "e": "E(X) = 0 significa que, a la larga, las ganancias y las pérdidas se compensan: el juego es equilibrado (justo). No quiere decir que siempre pierdas."
+ },
+ {
+  "q": "¿Por qué las casas de apuestas diseñan los juegos con esperanza matemática negativa para el jugador?",
+  "o": [
+   "Para asegurarse un beneficio a largo plazo, aunque el jugador pueda ganar puntualmente",
+   "Porque la ley se lo exige",
+   "Para que nadie juegue nunca",
+   "Porque así el juego es más divertido"
+  ],
+  "c": 0,
+  "e": "Con esperanza negativa para el jugador, a largo plazo la casa gana dinero aunque algunos jugadores ganen alguna vez."
+ },
+ {
+  "q": "Según la historia de la probabilidad, ¿quién introdujo el concepto de valor esperado en el primer libro impreso dedicado a la probabilidad?",
+  "o": [
+   "Christiaan Huygens, en 1657",
+   "Blaise Pascal, en 1654",
+   "Andréi Kolmogórov, en 1933",
+   "Pierre-Simon Laplace, en 1812"
+  ],
+  "c": 0,
+  "e": "Christiaan Huygens publicó en 1657 De ratiociniis in ludo aleae, el primer libro impreso sobre probabilidad, donde aparece el valor esperado. Pascal y Fermat trataron problemas de apuestas por carta en 1654, pero no publicaron un libro."
+ },
+ {
+  "q": "Si X representa una ganancia en euros, ¿en qué unidades se expresa E(X)?",
+  "o": [
+   "En euros (las mismas unidades que X)",
+   "En euros al cuadrado",
+   "Es adimensional",
+   "En porcentaje"
+  ],
+  "c": 0,
+  "e": "E(X) = Σ xᵢ·P(X = xᵢ) multiplica euros por probabilidades (que no tienen unidades), así que E(X) se mide en euros. Los euros al cuadrado son para la varianza."
+ },
+ {
+  "q": "¿Es correcto decir que E(X) es \"el valor más probable\" de X?",
+  "o": [
+   "No necesariamente; E(X) es el promedio ponderado, no tiene por qué coincidir con el valor de mayor probabilidad",
+   "Sí, siempre coinciden",
+   "Sí, por definición",
+   "Solo si X es continua"
+  ],
+  "c": 0,
+  "e": "No: E(X) es un promedio ponderado y puede no coincidir con el valor más probable (en un dado todos son igual de probables y E(X) = 3.5)."
+ },
+ {
+  "q": "Si multiplicamos todos los valores de X por una constante c, ¿qué le ocurre a E(X)?",
+  "o": [
+   "También se multiplica por c: E(cX)=c·E(X)",
+   "No cambia",
+   "Se eleva al cuadrado",
+   "Se divide por c"
+  ],
+  "c": 0,
+  "e": "E(cX) = Σ c·xᵢ·P(X = xᵢ) = c·Σ xᵢ·P(X = xᵢ) = c·E(X). Por ejemplo, si duplicas todos los premios, la ganancia media también se duplica."
+ },
+ {
+  "q": "¿Qué relación hay entre la esperanza matemática y la media aritmética de muchos datos repetidos?",
+  "o": [
+   "La esperanza es el límite teórico al que se aproxima la media aritmética cuando el número de repeticiones crece",
+   "No tienen ninguna relación",
+   "Son conceptos opuestos",
+   "La media aritmética siempre es mayor"
+  ],
+  "c": 0,
+  "e": "Al repetir el experimento muchas veces, la media aritmética de los resultados se acerca a E(X): la esperanza es ese valor teórico al que se aproxima."
+ },
+ {
+  "q": "Si sumamos una constante a a todos los valores de X, ¿qué le pasa a E(X)?",
+  "o": [
+   "También se suma esa constante: E(X+a)=E(X)+a",
+   "No cambia",
+   "Se multiplica por a",
+   "Se resta esa constante"
+  ],
+  "c": 0,
+  "e": "E(X + a) = E(X) + a: si a cada resultado le sumas a, la media también aumenta en a. Por ejemplo, si te dan 1 € extra en cada partida, ganas 1 € más de media."
+ },
+ {
+  "q": "Para calcular E(X) con la fórmula E(X) = Σ xᵢ·P(X = xᵢ), ¿qué necesitas conocer?",
+  "o": [
+   "Todos los valores de X y la probabilidad de cada uno",
+   "Solo el valor máximo de X",
+   "Solo los valores de X, sin sus probabilidades",
+   "Solo la probabilidad del valor más probable"
+  ],
+  "c": 0,
+  "e": "La fórmula Σ xᵢ·P(X = xᵢ) necesita cada valor xᵢ y su probabilidad P(X = xᵢ). Con solo los valores, sin las probabilidades, no sabrías cómo ponderarlos."
+ },
+ {
+  "q": "¿Qué campo profesional usa sistemáticamente la esperanza matemática para fijar precios?",
+  "o": [
+   "Los seguros (cálculo actuarial)",
+   "La meteorología",
+   "La arquitectura",
+   "La lingüística"
+  ],
+  "c": 0,
+  "e": "Las aseguradoras calculan el coste esperado de los siniestros (cálculo actuarial) y fijan el precio de la póliza por encima de esa esperanza."
+ },
+ {
+  "q": "Si un juego tiene E(X) positiva para el jugador, ¿qué se puede afirmar sobre quien lo organiza?",
+  "o": [
+   "Que, a largo plazo, pierde dinero con ese juego (salvo que compense de otra forma)",
+   "Que siempre gana dinero",
+   "Que el juego es ilegal",
+   "Nada, no hay relación"
+  ],
+  "c": 0,
+  "e": "Lo que gana de media el jugador lo pierde de media el organizador, así que con E(X) &gt; 0 para el jugador, el organizador pierde dinero a la larga."
+ },
+ {
+  "q": "¿Qué le pasa a E(X) si una variable aleatoria toma un único valor con probabilidad 1?",
+  "o": [
+   "E(X) coincide exactamente con ese valor",
+   "E(X) siempre vale 0",
+   "E(X) no se puede calcular",
+   "E(X) vale 1"
+  ],
+  "c": 0,
+  "e": "Si X = a con probabilidad 1, entonces E(X) = a·1 = a: la media es justo ese valor."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Una variable aleatoria X tiene P(X=1)=0.3, P(X=2)=0.5, P(X=3)=0.2. Calcula E(X).",
+  "o": [
+   "1.9",
+   "2",
+   "1.5",
+   "2.5"
+  ],
+  "c": 0,
+  "e": "E(X) = 1·0.3 + 2·0.5 + 3·0.2 = 0.3 + 1 + 0.6 = 1.9."
+ },
+ {
+  "q": "X tiene P(X=0)=0.4, P(X=10)=0.6. Calcula E(X).",
+  "o": [
+   "6",
+   "5",
+   "4",
+   "10"
+  ],
+  "c": 0,
+  "e": "E(X) = 0·0.4 + 10·0.6 = 6."
+ },
+ {
+  "q": "En un juego, ganas 5€ con probabilidad 0.2 y pierdes 2€ con probabilidad 0.8. Calcula la ganancia esperada.",
+  "o": [
+   "-0.6€",
+   "0.6€",
+   "3€",
+   "-1.6€"
+  ],
+  "c": 0,
+  "e": "E(X) = 5·0.2 + (−2)·0.8 = 1 − 1.6 = −0.6 €. El signo menos indica que, de media, pierdes."
+ },
+ {
+  "q": "En un juego, ganas 5€ con probabilidad 0.2 y pierdes 2€ con probabilidad 0.8, así que la ganancia esperada por partida es -0.6€. Si juegas 50 veces, ¿cuánto esperas ganar o perder en total?",
+  "o": [
+   "-30€",
+   "30€",
+   "-60€",
+   "-16€"
+  ],
+  "c": 0,
+  "e": "Si de media pierdes 0.6 € por partida, en 50 partidas esperas 50·(−0.6) = −30 €, es decir, perder 30 €."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=-2)=0.25, P(X=0)=0.5, P(X=3)=0.25. Calcula E(X).",
+  "o": [
+   "0.25",
+   "0.5",
+   "1",
+   "0"
+  ],
+  "c": 0,
+  "e": "E(X) = (−2)·0.25 + 0·0.5 + 3·0.25 = −0.5 + 0 + 0.75 = 0.25."
+ },
+ {
+  "q": "X toma valores 1,2,3,4,5,6 equiprobables (como un dado). Calcula E(X).",
+  "o": [
+   "3.5",
+   "3",
+   "21",
+   "6"
+  ],
+  "c": 0,
+  "e": "E(X) = (1 + 2 + 3 + 4 + 5 + 6)·(1/6) = 21/6 = 3.5. El error típico es dar 21 y olvidar multiplicar por 1/6."
+ },
+ {
+  "q": "En una rifa de 100 boletos a 2€ cada uno, el premio es de 150€ para un único ganador. Si compras un boleto, calcula tu ganancia esperada.",
+  "o": [
+   "-0.5€",
+   "1.48€",
+   "148€",
+   "0€"
+  ],
+  "c": 0,
+  "e": "Ganancia neta: 148 € con probabilidad 0.01 y −2 € con probabilidad 0.99. E(X) = 148·0.01 + (−2)·0.99 = 1.48 − 1.98 = −0.5 €."
+ },
+ {
+  "q": "Un juego de dados: si sale 1,2,3 pierdes 1€; si sale 4,5 ganas 1€; si sale 6 ganas 4€. Calcula E(X).",
+  "o": [
+   "0.5€",
+   "1€",
+   "-0.5€",
+   "0€"
+  ],
+  "c": 0,
+  "e": "E(X) = (−1)·3/6 + 1·2/6 + 4·1/6 = (−3 + 2 + 4)/6 = 3/6 = 0.5 €."
+ },
+ {
+  "q": "Una empresa estima que el 5% de sus productos fallan, costándole 200€ cada fallo. Calcula el coste esperado por producto.",
+  "o": [
+   "10€",
+   "200€",
+   "5€",
+   "20€"
+  ],
+  "c": 0,
+  "e": "Coste esperado = 200·0.05 + 0·0.95 = 10 € por producto."
+ },
+ {
+  "q": "Una aseguradora cobra 300€ por póliza. Estima que el 2% de los asegurados presentará un siniestro de 12000€. Calcula el beneficio esperado por póliza.",
+  "o": [
+   "60€",
+   "300€",
+   "240€",
+   "-60€"
+  ],
+  "c": 0,
+  "e": "Beneficio esperado = 300 − 12000·0.02 = 300 − 240 = 60 € por póliza. 240 € es el coste esperado de los siniestros, no el beneficio."
+ },
+ {
+  "q": "X tiene P(X=10)=0.1, P(X=20)=0.3, P(X=30)=0.4, P(X=40)=0.2. Calcula E(X).",
+  "o": [
+   "27",
+   "25",
+   "30",
+   "22"
+  ],
+  "c": 0,
+  "e": "E(X) = 10·0.1 + 20·0.3 + 30·0.4 + 40·0.2 = 1 + 6 + 12 + 8 = 27."
+ },
+ {
+  "q": "En una lotería, se compran boletos a 1€. Hay 3 premios de 50€ cada uno entre 200 boletos. Calcula la ganancia esperada por boleto.",
+  "o": [
+   "-0.25€",
+   "0.75€",
+   "0.25€",
+   "-0.75€"
+  ],
+  "c": 0,
+  "e": "Premio esperado por boleto = 50·3/200 = 0.75 €; restando el 1 € que cuesta: 0.75 − 1 = −0.25 €. 0.75 € es lo que recuperas de media, no lo que ganas."
+ },
+ {
+  "q": "Un examen tipo test tiene 4 opciones por pregunta; acertar suma 1 punto, fallar resta 0.25. Si respondes al azar, calcula la puntuación esperada por pregunta.",
+  "o": [
+   "0.0625",
+   "0.25",
+   "0",
+   "-0.0625"
+  ],
+  "c": 0,
+  "e": "Aciertas con probabilidad 1/4 y fallas con 3/4: E(X) = 1·0.25 + (−0.25)·0.75 = 0.25 − 0.1875 = 0.0625 puntos."
+ },
+ {
+  "q": "X tiene P(X=1)=1/6, P(X=2)=2/6, P(X=3)=3/6. Calcula E(X).",
+  "o": [
+   "≈2.33",
+   "2",
+   "1.5",
+   "3"
+  ],
+  "c": 0,
+  "e": "E(X) = 1·1/6 + 2·2/6 + 3·3/6 = (1 + 4 + 9)/6 = 14/6 ≈ 2.33."
+ },
+ {
+  "q": "Un vendedor gana 3% de comisión si vende (probabilidad 0.6) sobre 1000€, y nada si no vende. Calcula la comisión esperada.",
+  "o": [
+   "18€",
+   "30€",
+   "10.8€",
+   "3€"
+  ],
+  "c": 0,
+  "e": "Si vende cobra el 3% de 1000 € = 30 €, con probabilidad 0.6: E = 30·0.6 + 0·0.4 = 18 €."
+ },
+ {
+  "q": "Una máquina: con probabilidad 0.001 devuelve 500€; el resto de veces no devuelve nada. Si jugar cuesta 1€, calcula la ganancia neta esperada.",
+  "o": [
+   "-0.5€",
+   "0.5€",
+   "-1€",
+   "499€"
+  ],
+  "c": 0,
+  "e": "Premio esperado = 500·0.001 = 0.5 €; restando el coste de 1 €: 0.5 − 1 = −0.5 € por jugada."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

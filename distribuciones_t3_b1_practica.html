@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.1 Práctica — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema3_intro.html">Tema 2</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t3_b1_intro.html">Bloque 1</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 1 · Práctica libre</span>
+    <h1>Números combinatorios</h1>
+    <p>Ejercicios aleatorios de teoría (factorial, número combinatorio, Triángulo de Pascal) y de aplicación (cálculo de números combinatorios). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t3_b1_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t3_b2_intro.html">Bloque 2 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué es el factorial de un número n?",
+  "o": [
+   "El producto de todos los enteros desde 1 hasta n",
+   "La suma de todos los enteros desde 1 hasta n",
+   "El número n multiplicado por 2",
+   "La raíz cuadrada de n"
+  ],
+  "c": 0,
+  "e": "n! = n·(n−1)·…·2·1, es decir, multiplicas (no sumas) todos los enteros de 1 a n. Por ejemplo, 4! = 4·3·2·1 = 24."
+ },
+ {
+  "q": "¿Cuánto vale 0! por definición?",
+  "o": [
+   "1",
+   "0",
+   "No está definido",
+   "Depende del contexto"
+  ],
+  "c": 0,
+  "e": "Por convenio 0! = 1. Así funcionan fórmulas como (n sobre 0) = n!/(0!·n!) = 1; si 0! valiera 0 estarías dividiendo entre 0."
+ },
+ {
+  "q": "¿Qué representa el número combinatorio (m sobre n)?",
+  "o": [
+   "De cuántas formas se pueden elegir n elementos de un total de m, sin importar el orden",
+   "El producto de m por n",
+   "La probabilidad de elegir n elementos",
+   "El número de formas de ordenar m elementos"
+  ],
+  "c": 0,
+  "e": "(m sobre n) cuenta las formas de elegir n elementos de m sin importar el orden. Ordenar m elementos es otra cosa: eso es m!."
+ },
+ {
+  "q": "¿Cuál es la fórmula del número combinatorio?",
+  "o": [
+   "(m sobre n) = m!/(n!·(m-n)!)",
+   "(m sobre n) = m!/n!",
+   "(m sobre n) = m·n",
+   "(m sobre n) = (m-n)!/n!"
+  ],
+  "c": 0,
+  "e": "(m sobre n) = m!/(n!·(m−n)!). Por ejemplo, (6 sobre 2) = 6!/(2!·4!) = 30/2 = 15. Si olvidas el (m−n)! del denominador estás contando con orden."
+ },
+ {
+  "q": "¿Cuánto vale (n sobre 0)?",
+  "o": [
+   "1",
+   "0",
+   "n",
+   "n!"
+  ],
+  "c": 0,
+  "e": "(n sobre 0) = n!/(0!·n!) = 1: solo hay una forma de no elegir ningún elemento."
+ },
+ {
+  "q": "¿Cuánto vale (n sobre n)?",
+  "o": [
+   "1",
+   "0",
+   "n",
+   "n!"
+  ],
+  "c": 0,
+  "e": "(n sobre n) = n!/(n!·0!) = 1: solo hay una forma de elegirlos todos."
+ },
+ {
+  "q": "¿Cuánto vale (n sobre 1)?",
+  "o": [
+   "n",
+   "1",
+   "0",
+   "n!"
+  ],
+  "c": 0,
+  "e": "(n sobre 1) = n!/(1!·(n−1)!) = n: hay n formas de elegir un único elemento."
+ },
+ {
+  "q": "¿Qué dice la propiedad de simetría del número combinatorio?",
+  "o": [
+   "(m sobre n) = (m sobre m-n)",
+   "(m sobre n) = (n sobre m)",
+   "(m sobre n) = -(m sobre n)",
+   "(m sobre n) siempre vale 1"
+  ],
+  "c": 0,
+  "e": "Elegir n elementos de m equivale a elegir los m−n que dejas fuera, así que (m sobre n) = (m sobre m−n). Ejemplo: (6 sobre 2) = (6 sobre 4) = 15."
+ },
+ {
+  "q": "¿Qué es la identidad de Pascal?",
+  "o": [
+   "(m-1 sobre n-1) + (m-1 sobre n) = (m sobre n)",
+   "(m sobre n) + (m sobre n) = (m sobre 2n)",
+   "(m sobre n) · (m sobre n) = (m sobre n²)",
+   "(m-1 sobre n) = (m sobre n-1)"
+  ],
+  "c": 0,
+  "e": "La identidad de Pascal es (m−1 sobre n−1) + (m−1 sobre n) = (m sobre n). Ejemplo: (6 sobre 1) + (6 sobre 2) = 6 + 15 = 21 = (7 sobre 2)."
+ },
+ {
+  "q": "¿Qué relación tiene la identidad de Pascal con el Triángulo de Pascal?",
+  "o": [
+   "Cada número del triángulo es la suma de los dos que tiene encima",
+   "Cada número del triángulo es el doble del anterior",
+   "El triángulo no tiene relación con esta identidad",
+   "Cada fila suma siempre 100"
+  ],
+  "c": 0,
+  "e": "La identidad de Pascal es justo la regla que construye el triángulo: cada número es la suma de los dos que tiene encima."
+ },
+ {
+  "q": "¿Quién documentó el Triángulo de Pascal casi 400 años antes que Pascal?",
+  "o": [
+   "El matemático chino Yang Hui",
+   "El matemático griego Euclides",
+   "El matemático árabe Al-Juarismi",
+   "El matemático indio Aryabhata"
+  ],
+  "c": 0,
+  "e": "El triángulo aparece documentado en China en 1261, en la obra de Yang Hui, casi 400 años antes que Pascal."
+ },
+ {
+  "q": "¿Es siempre un número natural el resultado de un número combinatorio?",
+  "o": [
+   "Sí, siempre",
+   "No, puede ser negativo",
+   "No, puede ser decimal",
+   "Solo si m=n"
+  ],
+  "c": 0,
+  "e": "Sí: (m sobre n) cuenta cuántas formas hay de elegir, y un número de formas siempre es un número natural (nunca negativo ni decimal)."
+ },
+ {
+  "q": "¿Por qué (5 sobre 6) no está definido?",
+  "o": [
+   "Porque n debe ser menor o igual que m",
+   "Porque 5 y 6 son consecutivos",
+   "Porque 6 es par",
+   "Sí está definido: vale 6!/(5!·1!) = 6"
+  ],
+  "c": 0,
+  "e": "En la definición se exige m ≥ n: no puedes elegir 6 elementos de un total de 5. Además, en la fórmula aparecería (5 − 6)! = (−1)!, que no existe."
+ },
+ {
+  "q": "¿Cuál es el resultado correcto de 8!/6!?",
+  "o": [
+   "8·7 = 56",
+   "8",
+   "6",
+   "48"
+  ],
+  "c": 0,
+  "e": "8!/6! = 8·7·6!/6! = 8·7 = 56. Simplifica el 6! antes de multiplicar nada."
+ },
+ {
+  "q": "¿Para qué se usan los números combinatorios en la distribución binomial?",
+  "o": [
+   "Para contar cuántos caminos (secuencias) tienen exactamente k éxitos",
+   "Para calcular la media de la distribución",
+   "Para calcular la varianza directamente",
+   "No se usan en la distribución binomial"
+  ],
+  "c": 0,
+  "e": "(n sobre k) cuenta cuántas secuencias de n pruebas tienen exactamente k éxitos; luego cada una se multiplica por su probabilidad pᵏ·q⁽ⁿ⁻ᵏ⁾."
+ },
+ {
+  "q": "¿Cuántos términos tiene la fila n del Triángulo de Pascal (empezando a contar en n=0)?",
+  "o": [
+   "n+1 términos",
+   "n términos",
+   "n-1 términos",
+   "2n términos"
+  ],
+  "c": 0,
+  "e": "La fila n contiene (n sobre 0), (n sobre 1), …, (n sobre n): son n + 1 términos. Por ejemplo, la fila 3 es 1, 3, 3, 1 (4 términos)."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Calcula 5!",
+  "o": [
+   "120",
+   "20",
+   "60",
+   "24"
+  ],
+  "c": 0,
+  "e": "5! = 5·4·3·2·1 = 120. Ojo: 24 es 4!, y 20 es solo 5·4."
+ },
+ {
+  "q": "Calcula (5 sobre 2)",
+  "o": [
+   "10",
+   "20",
+   "5",
+   "15"
+  ],
+  "c": 0,
+  "e": "(5 sobre 2) = 5!/(2!·3!) = (5·4)/2 = 10. Si no divides entre 2! obtienes 20, que cuenta con orden."
+ },
+ {
+  "q": "Calcula (7 sobre 3)",
+  "o": [
+   "35",
+   "21",
+   "42",
+   "28"
+  ],
+  "c": 0,
+  "e": "(7 sobre 3) = (7·6·5)/(3·2·1) = 210/6 = 35."
+ },
+ {
+  "q": "Calcula (8 sobre 5)",
+  "o": [
+   "56",
+   "40",
+   "70",
+   "28"
+  ],
+  "c": 0,
+  "e": "(8 sobre 5) = (8 sobre 3) = (8·7·6)/(3·2·1) = 336/6 = 56."
+ },
+ {
+  "q": "Calcula (9 sobre 0)",
+  "o": [
+   "1",
+   "9",
+   "0",
+   "9!"
+  ],
+  "c": 0,
+  "e": "(9 sobre 0) = 9!/(0!·9!) = 1: hay una sola forma de no elegir nada."
+ },
+ {
+  "q": "Calcula (6 sobre 6)",
+  "o": [
+   "1",
+   "6",
+   "0",
+   "720"
+  ],
+  "c": 0,
+  "e": "(6 sobre 6) = 6!/(6!·0!) = 1. 720 es 6!, no el número combinatorio."
+ },
+ {
+  "q": "Calcula (10 sobre 1)",
+  "o": [
+   "10",
+   "1",
+   "100",
+   "45"
+  ],
+  "c": 0,
+  "e": "(10 sobre 1) = 10: hay 10 formas de elegir un solo elemento. 45 sería (10 sobre 2)."
+ },
+ {
+  "q": "Usando la simetría, si (8 sobre 3)=56, calcula (8 sobre 5)",
+  "o": [
+   "56",
+   "3",
+   "5",
+   "8"
+  ],
+  "c": 0,
+  "e": "Por simetría, (8 sobre 5) = (8 sobre 8−5) = (8 sobre 3) = 56."
+ },
+ {
+  "q": "Usando la identidad de Pascal, calcula (7 sobre 3) sabiendo que (6 sobre 2)=15 y (6 sobre 3)=20",
+  "o": [
+   "35",
+   "30",
+   "15",
+   "20"
+  ],
+  "c": 0,
+  "e": "Por la identidad de Pascal, (7 sobre 3) = (6 sobre 2) + (6 sobre 3) = 15 + 20 = 35."
+ },
+ {
+  "q": "Calcula 6!/4!",
+  "o": [
+   "30",
+   "6",
+   "24",
+   "12"
+  ],
+  "c": 0,
+  "e": "6!/4! = 6·5·4!/4! = 6·5 = 30."
+ },
+ {
+  "q": "Calcula (4 sobre 2)",
+  "o": [
+   "6",
+   "4",
+   "8",
+   "12"
+  ],
+  "c": 0,
+  "e": "(4 sobre 2) = (4·3)/(2·1) = 6."
+ },
+ {
+  "q": "En la fila n=5 del Triángulo de Pascal (1, 5, 10, 10, 5, 1), ¿qué número ocupa la posición k=2 (contando las posiciones desde k=0)?",
+  "o": [
+   "10",
+   "5",
+   "1",
+   "15"
+  ],
+  "c": 0,
+  "e": "Las posiciones van k = 0, 1, 2, …, así que en k = 2 está (5 sobre 2) = 10. El 5 está en k = 1 y el 15 ni siquiera aparece en esa fila."
+ },
+ {
+  "q": "Calcula (12 sobre 10)",
+  "o": [
+   "66",
+   "12",
+   "120",
+   "2"
+  ],
+  "c": 0,
+  "e": "Por simetría, (12 sobre 10) = (12 sobre 2) = (12·11)/2 = 66."
+ },
+ {
+  "q": "Calcula (10 sobre 2)",
+  "o": [
+   "45",
+   "20",
+   "90",
+   "100"
+  ],
+  "c": 0,
+  "e": "(10 sobre 2) = (10·9)/2 = 45. Si no divides entre 2! te sale 90."
+ },
+ {
+  "q": "¿Cuántas formas hay de elegir 3 personas de un grupo de 6, sin importar el orden?",
+  "o": [
+   "20",
+   "18",
+   "120",
+   "6"
+  ],
+  "c": 0,
+  "e": "Sin importar el orden es un número combinatorio: (6 sobre 3) = (6·5·4)/(3·2·1) = 120/6 = 20. 120 sería contando el orden."
+ },
+ {
+  "q": "Calcula 10!/(8!·2!)",
+  "o": [
+   "45",
+   "90",
+   "10",
+   "20"
+  ],
+  "c": 0,
+  "e": "10!/(8!·2!) = (10 sobre 2) = (10·9)/2 = 45. Si olvidas dividir entre 2! te queda 90."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

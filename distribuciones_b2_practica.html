@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.2 Práctica — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema1_intro.html">Tema 1</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_b2_intro.html">Bloque 2</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 2 · Práctica libre</span>
+    <h1>Distribución de probabilidad</h1>
+    <p>Ejercicios aleatorios de teoría (distribución de probabilidad, propiedad fundamental) y de aplicación (hallar constantes desconocidas en una distribución). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_b2_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_b3_intro.html">Bloque 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué es la distribución de probabilidad de una variable aleatoria discreta?",
+  "o": [
+   "Una lista de todos los valores posibles de X junto con la probabilidad de cada uno",
+   "El valor medio de X",
+   "El espacio muestral del experimento",
+   "La suma de todos los valores de X"
+  ],
+  "c": 0,
+  "e": "La distribución de probabilidad es la tabla que da cada valor xᵢ de X junto con P(X = xᵢ). La media o la suma de valores son cálculos que se hacen después con ella."
+ },
+ {
+  "q": "¿Qué condición deben cumplir siempre las probabilidades de una distribución?",
+  "o": [
+   "Sumar 1 y estar cada una entre 0 y 1",
+   "Sumar 0",
+   "Ser todas iguales",
+   "Ser todas mayores que 0.5"
+  ],
+  "c": 0,
+  "e": "Cada P(X = xᵢ) debe estar entre 0 y 1 y, además, todas juntas deben sumar 1, porque cubren todos los resultados posibles."
+ },
+ {
+  "q": "Si P(X=x)=kx² para x=1,2,3, ¿qué ecuación se plantea para hallar k?",
+  "o": [
+   "k·1²+k·2²+k·3²=1",
+   "k+2k+3k=1",
+   "k²+4k²+9k²=0",
+   "k·1+k·4+k·9=0"
+  ],
+  "c": 0,
+  "e": "Se impone que la suma valga 1: k·1² + k·2² + k·3² = 1, es decir, 14k = 1. El error típico es olvidar el cuadrado (k + 2k + 3k) o igualar a 0."
+ },
+ {
+  "q": "¿Por qué la propiedad ΣP(X=xᵢ)=1 es tan útil para hallar constantes desconocidas?",
+  "o": [
+   "Porque convierte la tabla de distribución en una ecuación resoluble",
+   "Porque siempre da como resultado k=1",
+   "Porque elimina la necesidad de calcular probabilidades",
+   "Porque solo se aplica a variables continuas"
+  ],
+  "c": 0,
+  "e": "Al imponer ΣP(X = xᵢ) = 1 obtienes una ecuación cuya incógnita es la constante (k, a, b...), y la despejas. k no tiene por qué valer 1."
+ },
+ {
+  "q": "¿Puede una distribución de probabilidad tener un valor P(X=xᵢ) negativo?",
+  "o": [
+   "No, nunca; toda probabilidad debe ser ≥0",
+   "Sí, si la variable toma valores negativos",
+   "Sí, siempre que la suma final sea 1",
+   "Solo si la variable es continua"
+  ],
+  "c": 0,
+  "e": "Una probabilidad nunca es negativa. Que X tome valores negativos (como −2 €) no tiene nada que ver: lo que no puede ser negativo es P(X = xᵢ)."
+ },
+ {
+  "q": "¿Puede una distribución de probabilidad tener un valor P(X=xᵢ) mayor que 1?",
+  "o": [
+   "No, nunca; toda probabilidad debe ser ≤1",
+   "Sí, si hay pocos valores posibles",
+   "Sí, si la variable es discreta infinita",
+   "Solo si k es mayor que 1"
+  ],
+  "c": 0,
+  "e": "Ninguna probabilidad puede ser mayor que 1 (sería \"más que seguro\"). Da igual cuántos valores tenga X."
+ },
+ {
+  "q": "Si X toma 4 valores con la misma probabilidad cada uno, ¿cuánto vale esa probabilidad?",
+  "o": [
+   "1/4 (0.25)",
+   "1/2",
+   "4",
+   "1"
+  ],
+  "c": 0,
+  "e": "Si los 4 valores tienen la misma probabilidad p, entonces 4p = 1, así que p = 1/4 = 0.25."
+ },
+ {
+  "q": "¿Qué error se comete si en una tabla de distribución las probabilidades suman 1.2?",
+  "o": [
+   "La tabla no es válida; no puede ser una distribución de probabilidad real",
+   "Ninguno, es un resultado normal",
+   "Hay que multiplicar todo por 1.2",
+   "Hay que restar 0.2 a la probabilidad mayor únicamente"
+  ],
+  "c": 0,
+  "e": "Si las probabilidades suman 1.2, la tabla no es una distribución de probabilidad válida: tienen que sumar exactamente 1. Hay que revisar los datos."
+ },
+ {
+  "q": "Si conocemos P(X=x) para todos los valores de X menos uno, ¿cómo se calcula el que falta?",
+  "o": [
+   "Restando de 1 la suma de las probabilidades conocidas",
+   "Multiplicando las conocidas entre sí",
+   "Es siempre 0.5",
+   "No se puede calcular sin más datos"
+  ],
+  "c": 0,
+  "e": "Como todas suman 1, la que falta es 1 menos la suma de las conocidas. Por ejemplo, si las demás suman 0.7, la que falta vale 0.3."
+ },
+ {
+  "q": "¿La distribución de probabilidad depende siempre de la regla de Laplace?",
+  "o": [
+   "No necesariamente; puede construirse por Laplace si hay equiprobabilidad, o venir dada directamente",
+   "Sí, siempre depende de Laplace",
+   "No, nunca tiene relación con Laplace",
+   "Solo si X es continua"
+  ],
+  "c": 0,
+  "e": "Laplace solo sirve cuando los resultados son equiprobables; en otros casos la distribución viene dada por datos, una fórmula con k, etc."
+ },
+ {
+  "q": "Si X toma valores 1,2,3 con P(X=1)=P(X=2)=P(X=3), ¿qué tipo de distribución es?",
+  "o": [
+   "Uniforme discreta",
+   "Normal",
+   "Binomial",
+   "Condicionada"
+  ],
+  "c": 0,
+  "e": "Si todos los valores tienen la misma probabilidad (aquí 1/3 cada uno), la distribución es uniforme discreta."
+ },
+ {
+  "q": "¿Qué representa la suma P(X=2)+P(X=3) en una distribución?",
+  "o": [
+   "La probabilidad de que X valga 2 o 3",
+   "La probabilidad de que X valga 2 y 3 a la vez",
+   "El valor esperado de X",
+   "La varianza de X"
+  ],
+  "c": 0,
+  "e": "P(X = 2) + P(X = 3) = P(X = 2 o X = 3), porque son sucesos incompatibles. X no puede valer 2 y 3 a la vez."
+ },
+ {
+  "q": "En una ecuación de segundo grado obtenida al aplicar ΣP(X=xᵢ)=1, ¿cómo se elige la solución válida de k?",
+  "o": [
+   "Descartando la solución que dé alguna probabilidad negativa o mayor que 1",
+   "Eligiendo siempre la solución positiva sin comprobar nada más",
+   "Eligiendo siempre la solución mayor",
+   "Sumando ambas soluciones"
+  ],
+  "c": 0,
+  "e": "Hay que comprobar cada solución: se descarta la que dé alguna probabilidad negativa o mayor que 1. Que k sea positiva no basta si, por ejemplo, algún P(X = xᵢ) = k − 0.5 sale negativo."
+ },
+ {
+  "q": "¿Qué significa que una distribución de probabilidad esté \"bien definida\"?",
+  "o": [
+   "Que cumple las dos condiciones: cada probabilidad entre 0 y 1, y la suma total vale 1",
+   "Que tiene exactamente 3 valores posibles",
+   "Que su media es 0",
+   "Que todos los valores de X son positivos"
+  ],
+  "c": 0,
+  "e": "Está bien definida si cada probabilidad está entre 0 y 1 y la suma total es 1. El número de valores o el signo de X no importan."
+ },
+ {
+  "q": "Si P(X=x)=k para x=1,...,n (equiprobable), ¿cuánto vale k en función de n?",
+  "o": [
+   "k=1/n",
+   "k=n",
+   "k=n²",
+   "k=1-n"
+  ],
+  "c": 0,
+  "e": "Hay n valores con probabilidad k cada uno, así que n·k = 1 y k = 1/n."
+ },
+ {
+  "q": "¿Es lo mismo la distribución de probabilidad que la función de distribución?",
+  "o": [
+   "No; la distribución da P(X=x) para cada valor exacto, la función de distribución da P(X≤x) acumulada",
+   "Sí, son términos intercambiables",
+   "Sí, ambas dan siempre el valor 1",
+   "No, la distribución solo existe para variables continuas"
+  ],
+  "c": 0,
+  "e": "La distribución da P(X = x) para cada valor; la función de distribución da la probabilidad acumulada F(x) = P(X ≤ x). Son cosas distintas, aunque una se obtiene de la otra."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=kx para x=1,2,3,4. Halla k.",
+  "o": [
+   "0.1",
+   "0.25",
+   "1",
+   "0.4"
+  ],
+  "c": 0,
+  "e": "k·1 + k·2 + k·3 + k·4 = 10k = 1, así que k = 0.1."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=kx para x=1,2,3,4, con k=0.1. Calcula P(X=3).",
+  "o": [
+   "0.3",
+   "0.1",
+   "3",
+   "0.03"
+  ],
+  "c": 0,
+  "e": "P(X = 3) = k·3 = 0.1·3 = 0.3. Cuidado: no es 3 (te falta multiplicar por k)."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=1)=0.2, P(X=2)=0.3, P(X=3)=a, P(X=4)=0.1. Halla a.",
+  "o": [
+   "0.4",
+   "0.6",
+   "0.2",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "a = 1 − (0.2 + 0.3 + 0.1) = 1 − 0.6 = 0.4."
+ },
+ {
+  "q": "X toma los valores 1,2,3,4,5 con la misma probabilidad cada uno. Calcula P(X=3).",
+  "o": [
+   "0.2",
+   "0.25",
+   "1/3",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "Son 5 valores equiprobables, así que cada uno tiene probabilidad 1/5 = 0.2."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=k(5-x) para x=1,2,3,4. Halla k.",
+  "o": [
+   "0.1",
+   "0.2",
+   "0.25",
+   "1"
+  ],
+  "c": 0,
+  "e": "k(5 − 1) + k(5 − 2) + k(5 − 3) + k(5 − 4) = k(4 + 3 + 2 + 1) = 10k = 1, así que k = 0.1."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=k(5-x) para x=1,2,3,4, con k=0.1. Calcula P(X=1).",
+  "o": [
+   "0.4",
+   "0.1",
+   "0.3",
+   "0.2"
+  ],
+  "c": 0,
+  "e": "P(X = 1) = k(5 − 1) = 0.1·4 = 0.4."
+ },
+ {
+  "q": "X tiene distribución P(X=0)=3k, P(X=1)=4k, P(X=2)=5k. Halla k.",
+  "o": [
+   "1/12 ≈ 0.083",
+   "1/3",
+   "0.2",
+   "1/9"
+  ],
+  "c": 0,
+  "e": "3k + 4k + 5k = 12k = 1, así que k = 1/12 ≈ 0.083."
+ },
+ {
+  "q": "Una variable aleatoria discreta X tiene P(X=-1)=2k, P(X=0)=3k, P(X=1)=5k. Halla P(X=1).",
+  "o": [
+   "0.5",
+   "0.1",
+   "0.3",
+   "0.2"
+  ],
+  "c": 0,
+  "e": "2k + 3k + 5k = 10k = 1, así que k = 0.1 y P(X = 1) = 5k = 0.5. Ojo: piden P(X = 1), no k."
+ },
+ {
+  "q": "X toma valores 2,4,6 con P(X=2)=0.25, P(X=4)=0.45, P(X=6)=b. Halla b.",
+  "o": [
+   "0.3",
+   "0.7",
+   "0.2",
+   "0.45"
+  ],
+  "c": 0,
+  "e": "b = 1 − (0.25 + 0.45) = 1 − 0.7 = 0.3."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=kx² para x=1,2. Halla k.",
+  "o": [
+   "0.2",
+   "0.5",
+   "1",
+   "0.1"
+  ],
+  "c": 0,
+  "e": "k·1² + k·2² = k + 4k = 5k = 1, así que k = 0.2."
+ },
+ {
+  "q": "Una variable aleatoria X tiene P(X=x)=kx² para x=1,2, con k=0.2. Calcula P(X=2).",
+  "o": [
+   "0.8",
+   "0.2",
+   "0.4",
+   "1"
+  ],
+  "c": 0,
+  "e": "P(X = 2) = k·2² = 0.2·4 = 0.8. Comprueba: P(X = 1) + P(X = 2) = 0.2 + 0.8 = 1."
+ },
+ {
+  "q": "X tiene P(X=0)=0.1, P(X=1)=0.3, P(X=2)=0.35, P(X=3)=c. Calcula c.",
+  "o": [
+   "0.25",
+   "0.75",
+   "0.35",
+   "0.1"
+  ],
+  "c": 0,
+  "e": "c = 1 − (0.1 + 0.3 + 0.35) = 1 − 0.75 = 0.25."
+ },
+ {
+  "q": "Una distribución tiene P(X=1)=k², P(X=2)=k, P(X=3)=2k, con k &gt; 0. Sabiendo que k²+3k-1=0, ¿cuál es el valor aproximado de k (solución positiva)?",
+  "o": [
+   "0.303",
+   "0.5",
+   "1",
+   "-3.303"
+  ],
+  "c": 0,
+  "e": "k = (−3 + √13)/2 ≈ 0.303. La otra raíz, (−3 − √13)/2 ≈ −3.303, se descarta porque daría probabilidades negativas."
+ },
+ {
+  "q": "X toma 6 valores equiprobables. ¿Cuál es la probabilidad de cada uno?",
+  "o": [
+   "1/6 ≈ 0.167",
+   "1/5",
+   "0.5",
+   "6"
+  ],
+  "c": 0,
+  "e": "Son 6 valores equiprobables: cada uno vale 1/6 ≈ 0.167."
+ },
+ {
+  "q": "Una variable X tiene P(X=1)=0.15, P(X=2)=0.25, P(X=3)=0.25, P(X=4)=d. Halla d.",
+  "o": [
+   "0.35",
+   "0.65",
+   "0.25",
+   "0.15"
+  ],
+  "c": 0,
+  "e": "d = 1 − (0.15 + 0.25 + 0.25) = 1 − 0.65 = 0.35."
+ },
+ {
+  "q": "X tiene distribución P(X=x)=k/x para x=1,2,4, sabiendo que k(1+0.5+0.25)=1. Halla k.",
+  "o": [
+   "≈0.571",
+   "1.75",
+   "0.25",
+   "4"
+  ],
+  "c": 0,
+  "e": "k(1 + 0.5 + 0.25) = 1.75k = 1, así que k = 1/1.75 ≈ 0.571. El error típico es dar 1.75, que es el coeficiente, no k."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

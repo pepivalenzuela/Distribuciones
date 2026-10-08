@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.1 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b1_intro.html">Bloque 1</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 1 · Práctica libre</span>
+    <h1>Variable continua y función de densidad</h1>
+    <p>Ejercicios aleatorios de teoría (variable continua, función de densidad) y de aplicación (cálculo de probabilidades y F(x) en distribuciones uniformes). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b1_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t4_b2_intro.html">Bloque 2 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué diferencia una variable discreta de una continua?",
+  "o": [
+   "La discreta se cuenta (valores separados); la continua se mide (infinitos valores en un intervalo)",
+   "La discreta siempre es negativa",
+   "La continua solo toma valores enteros",
+   "No hay ninguna diferencia real"
+  ],
+  "c": 0,
+  "e": "Una variable discreta toma valores aislados que se pueden contar (0, 1, 2…); una continua se mide y puede tomar cualquier valor de un intervalo, así que tiene infinitos valores posibles."
+ },
+ {
+  "q": "¿Cuál de estas es una variable continua?",
+  "o": [
+   "El tiempo de reacción ante un estímulo",
+   "El número de coches vendidos en un día",
+   "El número de hijos de una familia",
+   "El resultado de lanzar un dado"
+  ],
+  "c": 0,
+  "e": "El tiempo se mide y puede valer 0.31 s, 0.312 s… cualquier valor de un intervalo, así que es continua. Coches vendidos, hijos o el resultado de un dado se cuentan: son discretas."
+ },
+ {
+  "q": "¿Qué representa la función de densidad f(x) de una variable continua?",
+  "o": [
+   "Cómo de concentrada está la probabilidad alrededor de cada valor",
+   "La probabilidad exacta de cada valor",
+   "El número de valores posibles",
+   "La media de la variable"
+  ],
+  "c": 0,
+  "e": "f(x) indica cómo de concentrada está la probabilidad alrededor de cada valor: donde f es más alta, es más probable caer cerca. Pero f(x) no es la probabilidad de x; esa vale 0 en una variable continua."
+ },
+ {
+  "q": "¿Da la función de densidad f(x) directamente una probabilidad?",
+  "o": [
+   "No, la probabilidad es el área bajo la curva entre dos valores",
+   "Sí, siempre",
+   "Solo si f(x) es constante",
+   "Solo en variables discretas"
+  ],
+  "c": 0,
+  "e": "No: en una variable continua las probabilidades son áreas. P(a ≤ X ≤ b) es el área bajo f(x) entre a y b; el valor f(x) por sí solo no es una probabilidad."
+ },
+ {
+  "q": "¿Cuánto vale P(X = a) para cualquier valor concreto a, en una variable continua?",
+  "o": [
+   "0",
+   "1",
+   "0.5",
+   "Depende de a"
+  ],
+  "c": 0,
+  "e": "En una variable continua, la probabilidad de un valor exacto es el área de un segmento vertical, que es 0. Por eso P(X = a) = 0 para cualquier a."
+ },
+ {
+  "q": "¿Por qué P(X = a) = 0 no significa que sea imposible?",
+  "o": [
+   "Porque hay infinitos valores posibles, y acertar uno exacto tiene probabilidad matemáticamente nula, aunque pueda ocurrir",
+   "Porque a siempre es negativo",
+   "Porque f(x) nunca vale 0",
+   "Sí es imposible, por eso vale 0"
+  ],
+  "c": 0,
+  "e": "Hay infinitos valores posibles en el intervalo, así que acertar uno exacto tiene probabilidad 0, aunque algún valor concreto acabe ocurriendo. Probabilidad 0 no es lo mismo que suceso imposible en una variable continua."
+ },
+ {
+  "q": "¿Es lo mismo P(X &lt; a) que P(X ≤ a) en una variable continua?",
+  "o": [
+   "Sí, porque el punto a no aporta probabilidad",
+   "No, siempre son distintos",
+   "Solo si a=0",
+   "No, difieren en 0.5"
+  ],
+  "c": 0,
+  "e": "Sí: P(X ≤ a) = P(X &lt; a) + P(X = a) y, en una variable continua, P(X = a) = 0. Por eso en continuas da igual escribir &lt; o ≤."
+ },
+ {
+  "q": "¿Qué dos condiciones debe cumplir siempre f(x)?",
+  "o": [
+   "f(x) ≥ 0 y el área total bajo la curva vale 1",
+   "f(x) ≤ 1 y f(x) es decreciente",
+   "f(x) = 1 siempre y f(x) es simétrica",
+   "f(x) ≥ 0 y f(x) ≤ 1"
+  ],
+  "c": 0,
+  "e": "Para que f(x) sea una función de densidad debe ser f(x) ≥ 0 en todo punto y el área total bajo la curva debe valer 1. No se exige f(x) ≤ 1: lo que vale 1 es el área, no la altura."
+ },
+ {
+  "q": "¿Qué representa el área total bajo f(x)?",
+  "o": [
+   "La probabilidad total, que siempre vale 1",
+   "La media de la variable",
+   "El valor máximo de f(x)",
+   "La varianza de la variable"
+  ],
+  "c": 0,
+  "e": "El área total bajo f(x) es la probabilidad de que X tome algún valor, es decir, la probabilidad del suceso seguro: siempre vale 1."
+ },
+ {
+  "q": "¿Cómo se calcula P(a ≤ X ≤ b) a partir de f(x)?",
+  "o": [
+   "Como el área bajo f(x) entre a y b",
+   "Como f(b)-f(a)",
+   "Como f(a)·f(b)",
+   "Como el valor de f en el punto medio"
+  ],
+  "c": 0,
+  "e": "P(a ≤ X ≤ b) es el área bajo f(x) entre a y b. Ojo: f(b) − f(a) es una resta de alturas, no un área; la resta correcta es F(b) − F(a), con la función de distribución."
+ },
+ {
+  "q": "¿Qué relación hay entre F(x) y f(x)?",
+  "o": [
+   "f(x) es la derivada de F(x); F(x) es la acumulada de f(x)",
+   "Son la misma función con distinto nombre",
+   "F(x) es la derivada de f(x)",
+   "No tienen ninguna relación"
+  ],
+  "c": 0,
+  "e": "F(x) = P(X ≤ x) acumula el área bajo f hasta x, y al revés, derivando F(x) se obtiene f(x). No son la misma función: F es acumulada (va de 0 a 1) y f es densidad."
+ },
+ {
+  "q": "Un coche se avería en un punto al azar de un tramo de carretera de 6 km (todos los puntos igual de probables). Si X = punto kilométrico de la avería, ¿cuánto vale f(x)?",
+  "o": [
+   "1/6 para x∈[0, 6]",
+   "6 para x∈[0, 6]",
+   "1 para x∈[0, 6]",
+   "x/6 para x∈[0, 6]"
+  ],
+  "c": 0,
+  "e": "Si es equiprobable en [0, 6], f(x) es constante y el área total, base·altura = 6·f, debe valer 1. Por tanto f(x) = 1/6 en [0, 6]."
+ },
+ {
+  "q": "Un coche se avería en un punto al azar de un tramo de carretera de 6 km, con f(x) = 1/6 para x∈[0, 6]. ¿Cuánto vale F(3)?",
+  "o": [
+   "3/6 = 0.5",
+   "1/6",
+   "3",
+   "1"
+  ],
+  "c": 0,
+  "e": "F(3) = P(X ≤ 3) es el área de un rectángulo de base 3 y altura 1/6: F(3) = 3·(1/6) = 3/6 = 0.5. Tiene sentido: 3 km es justo la mitad del tramo."
+ },
+ {
+  "q": "¿Qué forma tiene la gráfica de F(x) en [0, 6] cuando f(x) = 1/6 es constante en [0, 6]?",
+  "o": [
+   "Una recta (F(x) crece de forma lineal)",
+   "Una campana",
+   "Una curva exponencial",
+   "Un escalón"
+  ],
+  "c": 0,
+  "e": "Si f(x) = 1/6 es constante, el área acumulada crece al mismo ritmo: F(x) = x/6 en [0, 6], que es un tramo de recta. Un escalón sería la F de una variable discreta."
+ },
+ {
+  "q": "¿Puede f(x) tomar valores mayores que 1?",
+  "o": [
+   "Sí, lo único que no puede es ser negativa; lo que debe valer 1 es el área total",
+   "No, nunca puede superar 1",
+   "Solo si la variable es discreta",
+   "Solo en el punto x=μ"
+  ],
+  "c": 0,
+  "e": "Sí. Lo que debe valer 1 es el área total, no la altura. Por ejemplo, f(x) = 2 en [0, 0.5] es una densidad válida, porque su área es 2·0.5 = 1."
+ },
+ {
+  "q": "¿Qué tienen en común la función de densidad y un histograma de frecuencias relativas?",
+  "o": [
+   "Ambos representan cómo se reparte la probabilidad/frecuencia, y el área total vale 1 (o 100%)",
+   "Ambos son siempre simétricos",
+   "Ambos solo existen para variables discretas",
+   "No tienen nada en común"
+  ],
+  "c": 0,
+  "e": "En un histograma de frecuencias relativas las áreas de las barras suman 1 (100%), igual que el área bajo f(x) vale 1. La función de densidad es como un histograma idealizado con barras infinitamente estrechas."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Clasifica: la duración de una llamada telefónica.",
+  "o": [
+   "Continua",
+   "Discreta",
+   "Ninguna de las dos",
+   "No es una variable aleatoria"
+  ],
+  "c": 0,
+  "e": "La duración de una llamada se mide (puede valer 2.37 min, 2.371 min…) y toma cualquier valor de un intervalo: es continua."
+ },
+ {
+  "q": "Clasifica: el número de llamadas perdidas en un día.",
+  "o": [
+   "Discreta",
+   "Continua",
+   "Ninguna de las dos",
+   "No es una variable aleatoria"
+  ],
+  "c": 0,
+  "e": "El número de llamadas perdidas se cuenta (0, 1, 2…): es una variable discreta."
+ },
+ {
+  "q": "X tiene función de densidad constante f(x) = 1/10 para x∈[0, 10]. Calcula P(X = 5).",
+  "o": [
+   "0",
+   "0.1",
+   "0.5",
+   "1"
+  ],
+  "c": 0,
+  "e": "En una variable continua la probabilidad de un valor exacto es 0, así que P(X = 5) = 0. No confundas con f(5) = 0.1, que es una altura, no una probabilidad."
+ },
+ {
+  "q": "X tiene función de densidad constante f(x) = 1/10 para x∈[0, 10]. Calcula P(2 ≤ X ≤ 4).",
+  "o": [
+   "0.2",
+   "0.1",
+   "0.4",
+   "2"
+  ],
+  "c": 0,
+  "e": "Es el área de un rectángulo de base 4 − 2 = 2 y altura 1/10: P(2 ≤ X ≤ 4) = 2·(1/10) = 0.2."
+ },
+ {
+  "q": "Un examen dura entre 0 y 10 minutos con f(x) = 1/10 constante. Calcula P(X &lt; 3).",
+  "o": [
+   "0.3",
+   "0.1",
+   "3",
+   "0.03"
+  ],
+  "c": 0,
+  "e": "Área de un rectángulo de base 3 y altura 1/10: P(X &lt; 3) = 3·(1/10) = 0.3."
+ },
+ {
+  "q": "Un examen dura entre 0 y 10 minutos con f(x) = 1/10 constante. Calcula P(X &gt; 8).",
+  "o": [
+   "0.2",
+   "0.8",
+   "8",
+   "0.02"
+  ],
+  "c": 0,
+  "e": "Área de un rectángulo de base 10 − 8 = 2 y altura 1/10: P(X &gt; 8) = 2·(1/10) = 0.2. 0.8 sería P(X &lt; 8)."
+ },
+ {
+  "q": "El tiempo de espera en una cola sigue f(x) = 1/15 para x∈[0, 15] minutos. Calcula P(5 ≤ X ≤ 10).",
+  "o": [
+   "≈0.333",
+   "5",
+   "1/15",
+   "≈0.667"
+  ],
+  "c": 0,
+  "e": "Área de un rectángulo de base 10 − 5 = 5 y altura 1/15: P(5 ≤ X ≤ 10) = 5/15 = 1/3 ≈ 0.333."
+ },
+ {
+  "q": "El tiempo de espera en una cola sigue f(x) = 1/15 para x∈[0, 15] minutos. Calcula F(15).",
+  "o": [
+   "1",
+   "0",
+   "15",
+   "1/15"
+  ],
+  "c": 0,
+  "e": "F(15) = P(X ≤ 15) es el área total, porque X nunca pasa de 15: F(15) = 15·(1/15) = 1."
+ },
+ {
+  "q": "El tiempo de espera en una cola sigue f(x) = 1/15 para x∈[0, 15] minutos. Calcula F(0).",
+  "o": [
+   "0",
+   "1",
+   "1/15",
+   "15"
+  ],
+  "c": 0,
+  "e": "F(0) = P(X ≤ 0) y X empieza en 0, así que no se acumula área: F(0) = 0·(1/15) = 0."
+ },
+ {
+  "q": "Si F(x) = x/8 para x∈[0, 8], calcula P(X ≤ 4).",
+  "o": [
+   "0.5",
+   "4",
+   "0.125",
+   "1"
+  ],
+  "c": 0,
+  "e": "P(X ≤ 4) = F(4) = 4/8 = 0.5. Basta con evaluar la función de distribución."
+ },
+ {
+  "q": "Si F(x) = x/8 para x∈[0, 8], calcula f(x) (la derivada de F(x)).",
+  "o": [
+   "1/8",
+   "1",
+   "8",
+   "x/8"
+  ],
+  "c": 0,
+  "e": "La densidad es la derivada de la función de distribución: f(x) = F′(x) = (x/8)′ = 1/8 en [0, 8]."
+ },
+ {
+  "q": "Si F(x) = x/20 para x∈[0, 20], calcula P(X &gt; 15).",
+  "o": [
+   "0.25",
+   "0.75",
+   "15",
+   "0.15"
+  ],
+  "c": 0,
+  "e": "P(X &gt; 15) = 1 − F(15) = 1 − 15/20 = 1 − 0.75 = 0.25. 0.75 es P(X ≤ 15), el error típico de olvidar el complementario."
+ },
+ {
+  "q": "Con f(x) = 1/4 constante en [0, 4], calcula el área total bajo la curva.",
+  "o": [
+   "1",
+   "4",
+   "0.25",
+   "16"
+  ],
+  "c": 0,
+  "e": "Es un rectángulo de base 4 y altura 1/4: área = 4·(1/4) = 1, como debe ser para toda función de densidad."
+ },
+ {
+  "q": "Un punto se elige al azar en un segmento de 12 cm, con f(x) = 1/12 constante. Calcula P(3 &lt; X &lt; 9).",
+  "o": [
+   "0.5",
+   "6",
+   "1/12",
+   "0.25"
+  ],
+  "c": 0,
+  "e": "Área de un rectángulo de base 9 − 3 = 6 y altura 1/12: P(3 &lt; X &lt; 9) = 6/12 = 0.5."
+ },
+ {
+  "q": "Un punto se elige al azar en un segmento de 12 cm, con f(x) = 1/12 constante. Calcula P(X = 6).",
+  "o": [
+   "0",
+   "1/12",
+   "0.5",
+   "6"
+  ],
+  "c": 0,
+  "e": "Es un valor exacto de una variable continua, así que P(X = 6) = 0. 1/12 es la altura f(6), no una probabilidad."
+ },
+ {
+  "q": "Si F(x) = x²/100 para x∈[0, 10], calcula P(X ≤ 6).",
+  "o": [
+   "0.36",
+   "0.6",
+   "6",
+   "0.06"
+  ],
+  "c": 0,
+  "e": "P(X ≤ 6) = F(6) = 6²/100 = 36/100 = 0.36. Cuidado con no olvidar el cuadrado (0.6 sería 6/10)."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

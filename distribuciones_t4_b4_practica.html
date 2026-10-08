@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.4 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b4_intro.html">Bloque 4</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 4 · Práctica libre</span>
+    <h1>Manejo de la tabla Z</h1>
+    <p>Ejercicios aleatorios de teoría (los 4 casos de la tabla Z) y de aplicación (cálculo de probabilidades con la tabla Z). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b4_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t4_b5_intro.html">Bloque 5 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué probabilidad da directamente la tabla Z?",
+  "o": [
+   "P(Z &lt; a) para valores positivos de a",
+   "P(Z &gt; a) para cualquier a",
+   "P(a &lt; Z &lt; b) siempre",
+   "La media de Z"
+  ],
+  "c": 0,
+  "e": "La tabla de la N(0, 1) da directamente P(Z ≤ a) (el área a la izquierda de a) para a ≥ 0. Los demás casos se obtienen con el complementario y la simetría."
+ },
+ {
+  "q": "¿Cómo se calcula P(Z &gt; a)?",
+  "o": [
+   "1-P(Z &lt; a)",
+   "P(Z &lt; a)",
+   "P(Z &lt; -a)",
+   "1+P(Z &lt; a)"
+  ],
+  "c": 0,
+  "e": "Por el complementario: P(Z &gt; a) = 1 − P(Z ≤ a). En continuas P(Z = a) = 0, así que da igual &lt; o ≤."
+ },
+ {
+  "q": "¿Cómo se calcula P(Z &lt; -a) para a positivo?",
+  "o": [
+   "1-P(Z &lt; a), por simetría",
+   "P(Z &lt; a) directamente",
+   "P(Z &gt; a)-1",
+   "-P(Z &lt; a)"
+  ],
+  "c": 0,
+  "e": "Por simetría respecto a 0, el área a la izquierda de −a es igual al área a la derecha de a: P(Z &lt; −a) = P(Z &gt; a) = 1 − P(Z &lt; a)."
+ },
+ {
+  "q": "¿Cómo se calcula P(Z &gt; -a) para a positivo?",
+  "o": [
+   "P(Z &lt; a)",
+   "1-P(Z &lt; a)",
+   "P(Z &lt; -a)",
+   "-P(Z &lt; a)"
+  ],
+  "c": 0,
+  "e": "Por simetría, el área a la derecha de −a es igual al área a la izquierda de a: P(Z &gt; −a) = P(Z &lt; a), que se lee directamente en la tabla."
+ },
+ {
+  "q": "¿Cómo se calcula P(a &lt; Z &lt; b)?",
+  "o": [
+   "P(Z &lt; b)-P(Z &lt; a)",
+   "P(Z &lt; b)+P(Z &lt; a)",
+   "P(Z &lt; a)-P(Z &lt; b)",
+   "P(Z &lt; b)·P(Z &lt; a)"
+  ],
+  "c": 0,
+  "e": "Al área a la izquierda de b le quitamos la de la izquierda de a: P(a &lt; Z &lt; b) = P(Z &lt; b) − P(Z &lt; a), siempre el mayor menos el menor."
+ },
+ {
+  "q": "¿Por qué P(Z &gt; a) y P(Z &lt; -a) usan la misma fórmula 1-P(Z &lt; a)?",
+  "o": [
+   "Por la simetría de la campana respecto a 0",
+   "Porque a siempre es 0",
+   "Porque Z solo toma valores positivos",
+   "Es una coincidencia sin explicación"
+  ],
+  "c": 0,
+  "e": "La campana de la N(0, 1) es simétrica respecto a 0, así que la cola a la derecha de a y la cola a la izquierda de −a tienen la misma área."
+ },
+ {
+  "q": "¿Cuánto vale P(Z &lt; 0)?",
+  "o": [
+   "0.5",
+   "0",
+   "1",
+   "0.25"
+  ],
+  "c": 0,
+  "e": "La N(0, 1) es simétrica respecto a 0 y el área total es 1, así que deja la mitad a cada lado: P(Z &lt; 0) = 0.5."
+ },
+ {
+  "q": "¿Cuánto vale P(Z &gt; 0)?",
+  "o": [
+   "0.5",
+   "0",
+   "1",
+   "0.25"
+  ],
+  "c": 0,
+  "e": "Por simetría respecto a 0, a la derecha de 0 queda la mitad del área: P(Z &gt; 0) = 1 − 0.5 = 0.5."
+ },
+ {
+  "q": "¿Puede salir negativo el resultado de P(a &lt; Z &lt; b)?",
+  "o": [
+   "No, toda probabilidad está entre 0 y 1; si te sale negativo, has restado al revés",
+   "Sí, si a &gt; b",
+   "Solo si a = 0",
+   "Solo si b &gt; 1"
+  ],
+  "c": 0,
+  "e": "Una probabilidad siempre está entre 0 y 1, así que nunca puede ser negativa. Si te sale negativa al calcular P(Z &lt; b) − P(Z &lt; a), has restado al revés (el menor menos el mayor)."
+ },
+ {
+  "q": "Si P(Z &lt; 1.5) = 0.9332, calcula P(Z &gt; 1.5).",
+  "o": [
+   "0.0668",
+   "0.9332",
+   "0.4332",
+   "0.0332"
+  ],
+  "c": 0,
+  "e": "Complementario: P(Z &gt; 1.5) = 1 − P(Z &lt; 1.5) = 1 − 0.9332 = 0.0668."
+ },
+ {
+  "q": "Si P(Z &lt; 0.5) = 0.6915, calcula P(Z &lt; -0.5).",
+  "o": [
+   "0.3085",
+   "0.6915",
+   "0.1915",
+   "0.4085"
+  ],
+  "c": 0,
+  "e": "Simetría: P(Z &lt; −0.5) = P(Z &gt; 0.5) = 1 − 0.6915 = 0.3085."
+ },
+ {
+  "q": "Si P(Z &lt; 2) = 0.9772 y P(Z &lt; 1) = 0.8413, calcula P(1 &lt; Z &lt; 2).",
+  "o": [
+   "0.1359",
+   "1.8185",
+   "0.0228",
+   "0.8413"
+  ],
+  "c": 0,
+  "e": "Intervalo: P(1 &lt; Z &lt; 2) = P(Z &lt; 2) − P(Z &lt; 1) = 0.9772 − 0.8413 = 0.1359. Sumar (1.8185) da más de 1, señal de error."
+ },
+ {
+  "q": "¿Qué caso se usa para calcular P(-1 &lt; Z &lt; 1)?",
+  "o": [
+   "El caso intervalo: P(Z &lt; 1)-P(Z &lt; -1)",
+   "El caso directo únicamente",
+   "El caso complementario únicamente",
+   "No se puede calcular"
+  ],
+  "c": 0,
+  "e": "Es un intervalo: P(−1 &lt; Z &lt; 1) = P(Z &lt; 1) − P(Z &lt; −1), y P(Z &lt; −1) se obtiene por simetría como 1 − P(Z &lt; 1). Resultado: 2·0.8413 − 1 = 0.6826."
+ },
+ {
+  "q": "¿Qué relación hay entre el caso de intervalos y la regla empírica 68-95-99.7?",
+  "o": [
+   "La regla empírica es un caso particular de P(-k &lt; Z &lt; k) para k=1, 2, 3",
+   "No tienen ninguna relación",
+   "La regla empírica solo aplica al caso directo",
+   "Son fórmulas contradictorias"
+  ],
+  "c": 0,
+  "e": "La regla 68-95-99.7 es el caso intervalo P(−k &lt; Z &lt; k) = 2·P(Z &lt; k) − 1 para k = 1, 2, 3: con la tabla salen 0.6826, 0.9544 y 0.9973."
+ },
+ {
+  "q": "¿Puede la tabla Z dar directamente P(Z &lt; -2)?",
+  "o": [
+   "No directamente, hay que usar la simetría: 1-P(Z &lt; 2)",
+   "Sí, siempre está tabulado para negativos",
+   "Solo si Z &lt; -3",
+   "Nunca se puede calcular"
+  ],
+  "c": 0,
+  "e": "La tabla solo recoge valores positivos de z, así que P(Z &lt; −2) se calcula por simetría: P(Z &lt; −2) = P(Z &gt; 2) = 1 − P(Z &lt; 2) = 1 − 0.9772 = 0.0228."
+ },
+ {
+  "q": "Si un problema pide P(Z ≤ a), ¿es distinto a P(Z &lt; a)?",
+  "o": [
+   "No, en variables continuas da exactamente el mismo valor",
+   "Sí, siempre difieren en 0.5",
+   "Sí, siempre difieren en 1",
+   "Solo son iguales si a=0"
+  ],
+  "c": 0,
+  "e": "No: P(Z ≤ a) = P(Z &lt; a) + P(Z = a) y en una variable continua P(Z = a) = 0, así que dan exactamente lo mismo."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Con P(Z &lt; 1) = 0.8413, calcula P(Z &gt; 1).",
+  "o": [
+   "0.1587",
+   "0.8413",
+   "0.3413",
+   "0.0587"
+  ],
+  "c": 0,
+  "e": "Complementario: P(Z &gt; 1) = 1 − 0.8413 = 0.1587."
+ },
+ {
+  "q": "Con P(Z &lt; 0.5) = 0.6915, calcula P(Z &lt; -0.5).",
+  "o": [
+   "0.3085",
+   "0.6915",
+   "0.1915",
+   "0.4085"
+  ],
+  "c": 0,
+  "e": "Simetría: P(Z &lt; −0.5) = P(Z &gt; 0.5) = 1 − 0.6915 = 0.3085."
+ },
+ {
+  "q": "Con P(Z &lt; 2) = 0.9772, calcula P(Z &gt; -2).",
+  "o": [
+   "0.9772",
+   "0.0228",
+   "0.4772",
+   "0.5228"
+  ],
+  "c": 0,
+  "e": "Simetría: el área a la derecha de −2 es la misma que a la izquierda de 2, así que P(Z &gt; −2) = P(Z &lt; 2) = 0.9772. 0.0228 sería P(Z &lt; −2)."
+ },
+ {
+  "q": "Con P(Z &lt; 1.96) = 0.9750, calcula P(-1.96 &lt; Z &lt; 1.96).",
+  "o": [
+   "0.9500",
+   "0.9750",
+   "0.0250",
+   "1.9500"
+  ],
+  "c": 0,
+  "e": "Intervalo simétrico: P(−1.96 &lt; Z &lt; 1.96) = 2·P(Z &lt; 1.96) − 1 = 2·0.9750 − 1 = 0.9500. Es el famoso 95%."
+ },
+ {
+  "q": "Con P(Z &lt; 1.28) = 0.8997, calcula P(Z &lt; -1.28).",
+  "o": [
+   "0.1003",
+   "0.8997",
+   "0.3997",
+   "0.0997"
+  ],
+  "c": 0,
+  "e": "Simetría: P(Z &lt; −1.28) = 1 − P(Z &lt; 1.28) = 1 − 0.8997 = 0.1003."
+ },
+ {
+  "q": "Calcula P(Z &lt; 0) usando la simetría.",
+  "o": [
+   "0.5",
+   "0",
+   "1",
+   "0.25"
+  ],
+  "c": 0,
+  "e": "La N(0, 1) es simétrica respecto a 0 y el área total es 1, así que P(Z &lt; 0) = 1/2 = 0.5."
+ },
+ {
+  "q": "Con P(Z &lt; 0.84) = 0.7995 y P(Z &lt; 0.25) = 0.5987, calcula P(0.25 &lt; Z &lt; 0.84).",
+  "o": [
+   "0.2008",
+   "1.3982",
+   "0.0592",
+   "0.7995"
+  ],
+  "c": 0,
+  "e": "Intervalo: P(0.25 &lt; Z &lt; 0.84) = P(Z &lt; 0.84) − P(Z &lt; 0.25) = 0.7995 − 0.5987 = 0.2008."
+ },
+ {
+  "q": "Con P(Z &lt; 1.5) = 0.9332, calcula P(Z &gt; -1.5).",
+  "o": [
+   "0.9332",
+   "0.0668",
+   "0.4332",
+   "0.8664"
+  ],
+  "c": 0,
+  "e": "Simetría: P(Z &gt; −1.5) = P(Z &lt; 1.5) = 0.9332. 0.0668 sería P(Z &lt; −1.5)."
+ },
+ {
+  "q": "Con P(Z &lt; 2.33) = 0.9901, calcula P(Z &gt; 2.33).",
+  "o": [
+   "0.0099",
+   "0.9901",
+   "0.4901",
+   "0.0198"
+  ],
+  "c": 0,
+  "e": "Complementario: P(Z &gt; 2.33) = 1 − 0.9901 = 0.0099."
+ },
+ {
+  "q": "Con P(Z &lt; 0.67) = 0.7486, calcula P(-0.67 &lt; Z &lt; 0.67).",
+  "o": [
+   "0.4972",
+   "0.7486",
+   "0.2514",
+   "0.9944"
+  ],
+  "c": 0,
+  "e": "Intervalo simétrico: P(−0.67 &lt; Z &lt; 0.67) = 2·0.7486 − 1 = 1.4972 − 1 = 0.4972 (aproximadamente el 50% central)."
+ },
+ {
+  "q": "Con P(Z &lt; 1) = 0.8413, calcula P(-1 &lt; Z &lt; 1) (regla del 68%).",
+  "o": [
+   "0.6826",
+   "0.8413",
+   "0.1587",
+   "0.9772"
+  ],
+  "c": 0,
+  "e": "P(−1 &lt; Z &lt; 1) = 2·P(Z &lt; 1) − 1 = 2·0.8413 − 1 = 0.6826 ≈ 68%, la primera cifra de la regla empírica."
+ },
+ {
+  "q": "Con P(Z &lt; 2) = 0.9772, calcula P(-2 &lt; Z &lt; 2) (regla del 95%).",
+  "o": [
+   "0.9544",
+   "0.9772",
+   "0.0456",
+   "0.9900"
+  ],
+  "c": 0,
+  "e": "P(−2 &lt; Z &lt; 2) = 2·P(Z &lt; 2) − 1 = 2·0.9772 − 1 = 0.9544 ≈ 95%."
+ },
+ {
+  "q": "Con P(Z &lt; 1.64) = 0.9495, calcula P(Z &gt; 1.64).",
+  "o": [
+   "0.0505",
+   "0.9495",
+   "0.4505",
+   "0.1010"
+  ],
+  "c": 0,
+  "e": "Complementario: P(Z &gt; 1.64) = 1 − 0.9495 = 0.0505."
+ },
+ {
+  "q": "Con P(Z &lt; 0.4) = 0.6554, calcula P(Z &lt; -0.4).",
+  "o": [
+   "0.3446",
+   "0.6554",
+   "0.1446",
+   "0.8446"
+  ],
+  "c": 0,
+  "e": "Simetría: P(Z &lt; −0.4) = 1 − P(Z &lt; 0.4) = 1 − 0.6554 = 0.3446."
+ },
+ {
+  "q": "Con P(Z &lt; -0.4) = 0.3446 y P(Z &lt; 0.4) = 0.6554, calcula P(-0.4 &lt; Z &lt; 0.4).",
+  "o": [
+   "0.3108",
+   "1.0000",
+   "0.6554",
+   "0.0217"
+  ],
+  "c": 0,
+  "e": "Intervalo: P(−0.4 &lt; Z &lt; 0.4) = P(Z &lt; 0.4) − P(Z &lt; −0.4) = 0.6554 − 0.3446 = 0.3108."
+ },
+ {
+  "q": "Con P(Z &lt; 3) = 0.99865, calcula P(Z &gt; 3).",
+  "o": [
+   "0.00135",
+   "0.99865",
+   "0.49865",
+   "0.0027"
+  ],
+  "c": 0,
+  "e": "Complementario: P(Z &gt; 3) = 1 − 0.99865 = 0.00135. Fíjate en que la tabla da 5 decimales a partir de z = 2.70."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

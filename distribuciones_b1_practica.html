@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.1 Práctica — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema1_intro.html">Tema 1</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_b1_intro.html">Bloque 1</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 1 · Práctica libre</span>
+    <h1>Variable aleatoria</h1>
+    <p>Ejercicios aleatorios de teoría (variable aleatoria, tipos discreta/continua) y de aplicación (identificar valores que toma X en distintos experimentos). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_b1_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_b2_intro.html">Bloque 2 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué es una variable aleatoria?",
+  "o": [
+   "Una función que asigna un número real a cada resultado del espacio muestral",
+   "Un suceso concreto de un experimento",
+   "Un número fijo que no cambia",
+   "El espacio muestral de un experimento"
+  ],
+  "c": 0,
+  "e": "Una variable aleatoria es una función X : E → ℝ: a cada resultado del experimento le asigna un número. No es un suceso ni el espacio muestral, sino la regla que los convierte en números."
+ },
+ {
+  "q": "¿Qué notación se usa para expresar que X es una variable aleatoria definida sobre el espacio muestral E?",
+  "o": [
+   "X : E → ℝ",
+   "E : X → ℝ",
+   "X = E",
+   "ℝ : X → E"
+  ],
+  "c": 0,
+  "e": "Se escribe X : E → ℝ porque X va del espacio muestral E (resultados del experimento) a los números reales. Cuidado con el orden: E es el conjunto de partida, no la función."
+ },
+ {
+  "q": "Una variable aleatoria es discreta cuando...",
+  "o": [
+   "Solo puede tomar un número finito de valores, o infinito numerable",
+   "Puede tomar todos los valores de un intervalo",
+   "Solo toma el valor 0 o 1",
+   "Nunca puede tomar valores negativos"
+  ],
+  "c": 0,
+  "e": "Una variable es discreta si sus valores se pueden contar: un número finito o infinito numerable (0, 1, 2, 3, ...). No hace falta que sean solo 0 y 1 ni que sean positivos."
+ },
+ {
+  "q": "Una variable aleatoria es continua cuando...",
+  "o": [
+   "Puede tomar todos los valores de un intervalo",
+   "Solo puede tomar un número finito de valores",
+   "Solo toma valores enteros",
+   "Coincide siempre con el espacio muestral"
+  ],
+  "c": 0,
+  "e": "Una variable continua puede tomar cualquier valor de un intervalo (tiempos, pesos, alturas...). Si solo toma valores que se pueden contar, sería discreta."
+ },
+ {
+  "q": "¿Cuál de estas variables es discreta?",
+  "o": [
+   "Número de mensajes recibidos en un día",
+   "Tiempo de espera en una cola",
+   "Estatura de una persona",
+   "Peso de un paquete"
+  ],
+  "c": 0,
+  "e": "El número de mensajes se cuenta (0, 1, 2, ...), así que es discreta. Tiempo, estatura y peso se miden y pueden tomar cualquier valor de un intervalo: son continuas."
+ },
+ {
+  "q": "¿Cuál de estas variables es continua?",
+  "o": [
+   "Cantidad de lluvia caída en mm",
+   "Número de hijos de una familia",
+   "Número de aciertos en un examen",
+   "Número de coches vendidos"
+  ],
+  "c": 0,
+  "e": "La lluvia en mm se mide y puede valer 12.37 mm o cualquier valor de un intervalo: es continua. Hijos, aciertos y coches vendidos se cuentan, así que son discretas."
+ },
+ {
+  "q": "¿Por qué el número de bebés en un embarazo es una variable discreta y no continua?",
+  "o": [
+   "Porque solo puede tomar valores enteros contables (0,1,2,...), no cualquier valor de un intervalo",
+   "Porque siempre vale 1",
+   "Porque depende del azar",
+   "Porque no es una variable aleatoria real"
+  ],
+  "c": 0,
+  "e": "Los bebés se cuentan: 0, 1, 2, ... y nunca 1.5. Que dependa del azar la hace aleatoria, pero lo que la hace discreta es que sus valores son contables."
+ },
+ {
+  "q": "Si un experimento tiene un espacio muestral E de 8 elementos, ¿cuántos valores distintos puede tomar como máximo una variable aleatoria X definida sobre E?",
+  "o": [
+   "Como máximo 8 (uno por cada elemento, aunque pueden repetirse)",
+   "Exactamente 8 siempre",
+   "Como mínimo 8",
+   "Un número infinito"
+  ],
+  "c": 0,
+  "e": "X asigna un número a cada uno de los 8 resultados, así que como mucho hay 8 valores distintos; puede haber menos si varios resultados reciben el mismo número (como en \"número de caras\")."
+ },
+ {
+  "q": "¿Qué diferencia hay entre el espacio muestral E y el conjunto de valores que toma X?",
+  "o": [
+   "E contiene los resultados del experimento; los valores de X son los números que la función asigna a esos resultados",
+   "Son exactamente lo mismo siempre",
+   "E es un número y los valores de X son conjuntos",
+   "No hay ninguna relación entre ambos"
+  ],
+  "c": 0,
+  "e": "E está formado por resultados (como CCX), mientras que X les asigna números (como 2). Por ejemplo, con 3 monedas E tiene 8 elementos y X = \"número de caras\" toma solo 4 valores."
+ },
+ {
+  "q": "¿Es correcto decir que toda variable aleatoria discreta tiene un número finito de valores?",
+  "o": [
+   "No, también puede tener infinitos valores, siempre que sean numerables",
+   "Sí, siempre tiene un número finito",
+   "Sí, pero solo si el experimento es finito",
+   "No, nunca puede tener valores finitos"
+  ],
+  "c": 0,
+  "e": "Discreta no significa finita: el número de lanzamientos hasta sacar un 6 puede ser 1, 2, 3, ... sin tope, y sigue siendo discreta porque sus valores se pueden contar."
+ },
+ {
+  "q": "El dinero en euros y céntimos, ¿es una variable discreta o continua en la práctica?",
+  "o": [
+   "Discreta, porque solo puede tomar múltiplos de 0.01€",
+   "Continua, porque puede tomar cualquier valor real",
+   "Ninguna de las dos, no es una variable aleatoria",
+   "Depende del banco"
+  ],
+  "c": 0,
+  "e": "Las cantidades de dinero van de céntimo en céntimo (múltiplos de 0.01 €), así que sus valores se pueden contar: en la práctica es discreta."
+ },
+ {
+  "q": "Al lanzar 3 monedas, sea X = \"número de caras\". ¿Qué representa X(CCC) = 3?",
+  "o": [
+   "Que al resultado CCC (tres caras) la variable aleatoria le asigna el valor 3",
+   "Que hay 3 monedas en el experimento",
+   "Que el experimento se repite 3 veces",
+   "Que CCC es un suceso imposible"
+  ],
+  "c": 0,
+  "e": "X(CCC) = 3 significa que al resultado \"tres caras\" la variable le asigna el número 3. Es el valor de la función X en ese resultado, no el número de monedas ni de repeticiones."
+ },
+ {
+  "q": "Al lanzar 3 monedas, sea X = \"número de caras\". Si dos resultados distintos del espacio muestral (por ejemplo CCX y XCC) tienen el mismo número de caras, ¿qué ocurre con su valor de X?",
+  "o": [
+   "X les asigna el mismo valor",
+   "X les asigna valores distintos obligatoriamente",
+   "Uno de los dos deja de pertenecer a E",
+   "No se puede calcular X en ese caso"
+  ],
+  "c": 0,
+  "e": "X es una función: si CCX y XCC tienen las dos 2 caras, X les asigna a ambas el valor 2. Una función puede dar el mismo valor a resultados distintos."
+ },
+ {
+  "q": "¿Puede una variable aleatoria discreta tomar valores negativos?",
+  "o": [
+   "Sí, por ejemplo en un juego donde perder dinero se representa con valores negativos",
+   "No, nunca puede ser negativa",
+   "Solo si el espacio muestral tiene números negativos",
+   "Solo las variables continuas pueden ser negativas"
+  ],
+  "c": 0,
+  "e": "Sí: en un juego, X = \"ganancia\" vale −2 si pierdes 2 €. Los valores de X son números reales cualesquiera, también negativos."
+ },
+ {
+  "q": "¿Qué tienen en común todas las variables aleatorias, sean discretas o continuas?",
+  "o": [
+   "Ambas son funciones que asignan un número real a cada resultado de un experimento aleatorio",
+   "Ambas solo toman valores enteros",
+   "Ambas están acotadas entre 0 y 1",
+   "Ambas coinciden siempre con el espacio muestral"
+  ],
+  "c": 0,
+  "e": "Discretas o continuas, todas son funciones que asignan un número real a cada resultado del experimento; lo que cambia es el tipo de valores que toman."
+ },
+ {
+  "q": "¿Cuál de estas variables es discreta?",
+  "o": [
+   "Número de aciertos en un examen tipo test",
+   "Duración de una llamada telefónica",
+   "Cantidad de agua en un vaso",
+   "Temperatura registrada en un termómetro"
+  ],
+  "c": 0,
+  "e": "El número de aciertos se cuenta (0, 1, 2, ...), así que es discreta. Duración, cantidad de agua y temperatura se miden en un intervalo: son continuas."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Se lanzan 2 dados. Sea X = \"suma de los puntos obtenidos\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{2,3,4,5,6,7,8,9,10,11,12}",
+   "{1,2,3,4,5,6,7,8,9,10,11,12}",
+   "{2,4,6,8,10,12}",
+   "{1,2,3,4,5,6}"
+  ],
+  "c": 0,
+  "e": "La suma mínima es 1 + 1 = 2 y la máxima 6 + 6 = 12, y se alcanzan todos los enteros intermedios. El 1 no es posible porque cada dado da al menos 1."
+ },
+ {
+  "q": "Se extraen 2 bolas sin reposición de una urna con 3 rojas y 2 verdes. Sea X = \"número de bolas rojas extraídas\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{0,1,2}",
+   "{0,1,2,3}",
+   "{1,2}",
+   "{0,1,2,3,4,5}"
+  ],
+  "c": 0,
+  "e": "Se sacan solo 2 bolas, así que puede haber 0, 1 o 2 rojas (hay 2 verdes, así que 0 rojas sí es posible). Nunca 3, porque solo extraes dos."
+ },
+ {
+  "q": "Se lanza una moneda 4 veces. Sea X = \"número de caras\". ¿Cuántos valores distintos puede tomar X?",
+  "o": [
+   "5",
+   "4",
+   "16",
+   "8"
+  ],
+  "c": 0,
+  "e": "X puede valer 0, 1, 2, 3 o 4 caras: son 5 valores. 16 es el número de resultados del espacio muestral (2⁴), no el número de valores de X."
+ },
+ {
+  "q": "Se extraen 3 cartas de una baraja de 40 sin reposición. Sea X = \"número de ases obtenidos\" (hay 4 ases). ¿Qué valores puede tomar X?",
+  "o": [
+   "{0,1,2,3}",
+   "{0,1,2,3,4}",
+   "{1,2,3}",
+   "{0,1,2}"
+  ],
+  "c": 0,
+  "e": "Con 3 cartas puedes sacar 0, 1, 2 o 3 ases. Aunque haya 4 ases en la baraja, no caben 4 en solo 3 cartas."
+ },
+ {
+  "q": "En una ruleta con números del 0 al 36, sea X = \"resultado obtenido\". ¿Cuántos valores puede tomar X?",
+  "o": [
+   "37",
+   "36",
+   "38",
+   "35"
+  ],
+  "c": 0,
+  "e": "Del 0 al 36 hay 37 números (no olvides contar el 0)."
+ },
+ {
+  "q": "Se lanzan 3 dados. Sea X = \"suma de los tres dados\". ¿Cuál es el valor mínimo y máximo que puede tomar X?",
+  "o": [
+   "3 y 18",
+   "1 y 18",
+   "3 y 15",
+   "0 y 18"
+  ],
+  "c": 0,
+  "e": "La suma mínima es 1 + 1 + 1 = 3 y la máxima 6 + 6 + 6 = 18."
+ },
+ {
+  "q": "Clasifica: número de llamadas recibidas por un call center en una hora.",
+  "o": [
+   "Discreta",
+   "Continua",
+   "Ninguna de las dos",
+   "No es una variable aleatoria"
+  ],
+  "c": 0,
+  "e": "Las llamadas se cuentan (0, 1, 2, ...), así que es una variable aleatoria discreta."
+ },
+ {
+  "q": "Clasifica: peso exacto de un paquete de café.",
+  "o": [
+   "Continua",
+   "Discreta",
+   "Ninguna de las dos",
+   "No es una variable aleatoria"
+  ],
+  "c": 0,
+  "e": "El peso exacto se mide y puede tomar cualquier valor de un intervalo, así que es continua."
+ },
+ {
+  "q": "Se extraen 2 bolas con reposición de una urna con 4 blancas y 6 negras. Sea X = \"número de blancas extraídas\". ¿Qué valores toma X?",
+  "o": [
+   "{0,1,2}",
+   "{0,1,2,3,4}",
+   "{1,2}",
+   "{0,1}"
+  ],
+  "c": 0,
+  "e": "Se extraen 2 bolas, así que puede haber 0, 1 o 2 blancas. Que haya 4 blancas en la urna no importa: solo sacas dos."
+ },
+ {
+  "q": "Un examen tiene 5 preguntas tipo test. Sea X = \"número de respuestas correctas\". ¿Cuántos valores puede tomar X?",
+  "o": [
+   "6",
+   "5",
+   "10",
+   "4"
+  ],
+  "c": 0,
+  "e": "Puedes acertar 0, 1, 2, 3, 4 o 5 preguntas: son 6 valores. El error típico es olvidar el 0."
+ },
+ {
+  "q": "Se lanza un dado hasta obtener un 6 por primera vez. Sea X = \"número de lanzamientos necesarios\". ¿X es discreta finita o discreta infinita numerable?",
+  "o": [
+   "Discreta infinita numerable",
+   "Discreta finita",
+   "Continua",
+   "No es variable aleatoria"
+  ],
+  "c": 0,
+  "e": "X puede valer 1, 2, 3, ... sin tope (podría tardar muchísimo en salir el 6), pero sus valores se pueden contar: es discreta infinita numerable."
+ },
+ {
+  "q": "En una fábrica se seleccionan 4 piezas al azar de una línea de producción. Sea X = \"número de piezas defectuosas\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{0,1,2,3,4}",
+   "{1,2,3,4}",
+   "{0,1,2,3}",
+   "{4}"
+  ],
+  "c": 0,
+  "e": "Entre 4 piezas puede haber 0, 1, 2, 3 o 4 defectuosas, así que X toma los valores {0,1,2,3,4}. No olvides el 0 (ninguna defectuosa)."
+ },
+ {
+  "q": "Se lanzan 2 monedas y se define X = \"número de cruces menos número de caras\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{-2,0,2}",
+   "{-2,-1,0,1,2}",
+   "{0,1,2}",
+   "{-1,0,1}"
+  ],
+  "c": 0,
+  "e": "Con 2 monedas: CC da 0 − 2 = −2, CX o XC dan 1 − 1 = 0 y XX da 2 − 0 = 2. Los valores ±1 no salen nunca, porque cruces + caras = 2."
+ },
+ {
+  "q": "Sea X = \"diferencia entre el mayor y el menor resultado al lanzar 2 dados\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{0,1,2,3,4,5}",
+   "{1,2,3,4,5}",
+   "{0,1,2,3,4,5,6}",
+   "{-5,-4,-3,-2,-1,0,1,2,3,4,5}"
+  ],
+  "c": 0,
+  "e": "Si salen dos números iguales la diferencia es 0, y la máxima es 6 − 1 = 5. Como es \"mayor menos menor\", nunca es negativa."
+ },
+ {
+  "q": "En un sorteo se compran 3 boletos de 50, de los cuales 5 son premiados. Sea X = \"número de boletos premiados entre los 3 comprados\". ¿Qué valores puede tomar X?",
+  "o": [
+   "{0,1,2,3}",
+   "{0,1,2,3,4,5}",
+   "{1,2,3}",
+   "{0,1,2}"
+  ],
+  "c": 0,
+  "e": "Entre 3 boletos puedes tener 0, 1, 2 o 3 premiados. Aunque haya 5 premios, con 3 boletos no puedes tener más de 3."
+ },
+ {
+  "q": "Se lanza una moneda repetidamente hasta obtener 2 caras seguidas. Sea X = \"número de lanzamientos\". ¿Cuál es el valor mínimo posible de X?",
+  "o": [
+   "2",
+   "1",
+   "3",
+   "0"
+  ],
+  "c": 0,
+  "e": "Para tener 2 caras seguidas necesitas al menos 2 lanzamientos (CC), así que el mínimo es 2."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

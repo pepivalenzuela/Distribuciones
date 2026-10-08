@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.7 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b7_intro.html">Bloque 7</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 7 · Práctica libre</span>
+    <h1>Aproximación de la binomial por la normal</h1>
+    <p>Ejercicios aleatorios de teoría (condición, parámetros y corrección por continuidad) y de aplicación (problemas resueltos aproximando la binomial). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b7_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_tema4_intro.html">Tema 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué condición exige la PEvAU para aproximar X ~ B(n, p) por una normal?",
+  "o": [
+   "n·p ≥ 5 y n·(1 − p) ≥ 5",
+   "n ≥ 30",
+   "Solo n·p ≥ 5",
+   "p ≥ 0.5"
+  ],
+  "c": 0,
+  "e": "Hacen falta las dos condiciones: n·p ≥ 5 y n·q = n·(1 − p) ≥ 5."
+ },
+ {
+  "q": "Si se cumple la condición, ¿por qué normal se aproxima X ~ B(n, p)?",
+  "o": [
+   "N(n·p, √(n·p·(1 − p)))",
+   "N(n·p, n·p·(1 − p))",
+   "N(n, p)",
+   "N(n·p, √(n·p))"
+  ],
+  "c": 0,
+  "e": "Media μ = n·p y desviación típica σ = √(n·p·q). El segundo parámetro de N es σ, no la varianza."
+ },
+ {
+  "q": "¿Por qué hay que aplicar la corrección por continuidad?",
+  "o": [
+   "Porque la binomial es discreta y cada valor entero k se representa en la normal por el tramo de k − 0.5 a k + 0.5",
+   "Porque la normal tiene media 0.5",
+   "Para que la probabilidad total sume 1.5",
+   "Porque la tabla Z solo tiene dos decimales"
+  ],
+  "c": 0,
+  "e": "Cada valor k de la binomial es una barra de anchura 1 centrada en k, que va de k − 0.5 a k + 0.5."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(X = k) se aproxima por…",
+  "o": [
+   "P(k − 0.5 ≤ X' ≤ k + 0.5)",
+   "P(X' = k)",
+   "P(X' ≤ k + 0.5)",
+   "P(k ≤ X' ≤ k + 1)"
+  ],
+  "c": 0,
+  "e": "El valor k ocupa la barra de k − 0.5 a k + 0.5. En la normal P(X' = k) = 0, por eso no sirve."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(X ≤ k) se aproxima por…",
+  "o": [
+   "P(X' ≤ k + 0.5)",
+   "P(X' ≤ k − 0.5)",
+   "P(X' ≤ k)",
+   "P(X' ≥ k + 0.5)"
+  ],
+  "c": 0,
+  "e": "k está incluido, así que se toma su barra completa, hasta k + 0.5."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(X &lt; k) se aproxima por…",
+  "o": [
+   "P(X' ≤ k − 0.5)",
+   "P(X' ≤ k + 0.5)",
+   "P(X' ≤ k)",
+   "P(X' ≥ k − 0.5)"
+  ],
+  "c": 0,
+  "e": "X &lt; k equivale a X ≤ k − 1, y la barra de k − 1 termina en k − 0.5."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(X ≥ k) se aproxima por…",
+  "o": [
+   "P(X' ≥ k − 0.5)",
+   "P(X' ≥ k + 0.5)",
+   "P(X' ≥ k)",
+   "P(X' ≤ k − 0.5)"
+  ],
+  "c": 0,
+  "e": "k está incluido, así que se toma su barra completa, desde k − 0.5."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(X &gt; k) se aproxima por…",
+  "o": [
+   "P(X' ≥ k + 0.5)",
+   "P(X' ≥ k − 0.5)",
+   "P(X' ≥ k)",
+   "P(X' ≤ k + 0.5)"
+  ],
+  "c": 0,
+  "e": "X &gt; k equivale a X ≥ k + 1, y la barra de k + 1 empieza en k + 0.5."
+ },
+ {
+  "q": "Con la corrección por continuidad, P(a ≤ X ≤ b) se aproxima por…",
+  "o": [
+   "P(a − 0.5 ≤ X' ≤ b + 0.5)",
+   "P(a + 0.5 ≤ X' ≤ b − 0.5)",
+   "P(a ≤ X' ≤ b)",
+   "P(a − 0.5 ≤ X' ≤ b − 0.5)"
+  ],
+  "c": 0,
+  "e": "Los dos extremos están incluidos: se ensancha medio punto por cada lado."
+ },
+ {
+  "q": "Una alumna aproxima B(120, 0.9) por N(108, 10.8). ¿Qué ha hecho mal?",
+  "o": [
+   "Ha puesto la varianza en lugar de la desviación típica: debe ser N(108, √10.8) ≈ N(108, 3.29)",
+   "Ha calculado mal la media, que es 12",
+   "Nada, la aproximación es correcta",
+   "Debía usar N(120, 0.9)"
+  ],
+  "c": 0,
+  "e": "n·p·q = 120·0.9·0.1 = 10.8 es la varianza; σ = √10.8 ≈ 3.29."
+ },
+ {
+  "q": "En una binomial, ¿a qué equivale P(X &lt; k)?",
+  "o": [
+   "A P(X ≤ k − 1), porque X solo toma valores enteros",
+   "A P(X ≤ k + 1)",
+   "A P(X ≤ k)",
+   "A P(X ≥ k − 1)"
+  ],
+  "c": 0,
+  "e": "Si X es entero y menor que k, como mucho vale k − 1."
+ },
+ {
+  "q": "¿Qué haces si X ~ B(30, 0.1), donde n·p = 3?",
+  "o": [
+   "No aproximas por la normal: calculas con la binomial",
+   "Aproximas igualmente, pero sin corrección por continuidad",
+   "Usas directamente N(0, 1)",
+   "Sumas 5 a n·p para cumplir la condición"
+  ],
+  "c": 0,
+  "e": "n·p = 3 &lt; 5, así que no se cumple la condición y la aproximación no es fiable."
+ },
+ {
+  "q": "En un ejercicio PEvAU de este tipo, ¿qué debes escribir para conseguir la puntuación de «aproximar la distribución»?",
+  "o": [
+   "Que n·p ≥ 5 y n·(1 − p) ≥ 5, y la normal X' ~ N(n·p, √(n·p·(1 − p))) con sus valores",
+   "Solo el resultado final de la probabilidad",
+   "La fórmula de la probabilidad binomial con los números combinatorios",
+   "Solo la media n·p"
+  ],
+  "c": 0,
+  "e": "El criterio da hasta 0.5 puntos por aproximar (comprobar la condición y escribir la normal) y hasta 0.75 por los cálculos y la respuesta."
+ },
+ {
+  "q": "En la binomial, P(X ≤ 20) y P(X &lt; 21) son iguales. ¿Qué probabilidad normal corresponde a ambas?",
+  "o": [
+   "P(X' ≤ 20.5)",
+   "P(X' ≤ 20) y P(X' ≤ 21), respectivamente",
+   "P(X' ≤ 21.5)",
+   "P(X' ≤ 19.5)"
+  ],
+  "c": 0,
+  "e": "Las dos son «hasta 20 incluido»; la barra de 20 termina en 20.5."
+ },
+ {
+  "q": "¿Por qué la media de la normal que aproxima a B(n, p) es n·p?",
+  "o": [
+   "Porque tiene que coincidir con la media de la binomial, que es n·p",
+   "Porque la normal siempre tiene media n",
+   "Porque la media de la binomial es p",
+   "Por convenio, sin relación con la binomial"
+  ],
+  "c": 0,
+  "e": "La normal aproximante conserva la media n·p y la desviación típica √(n·p·q) de la binomial."
+ },
+ {
+  "q": "¿Qué ventaja tiene aproximar B(120, 0.9) por una normal para calcular P(X ≥ 110)?",
+  "o": [
+   "Evita sumar 11 probabilidades binomiales con números combinatorios muy grandes",
+   "Da siempre el resultado exacto",
+   "Permite no usar la tabla Z",
+   "Hace que el valor de p deje de importar"
+  ],
+  "c": 0,
+  "e": "P(X ≥ 110) son 11 términos (de 110 a 120); con la normal basta una tipificación y la tabla. El resultado es aproximado."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "En una binomial X ~ B(120, 0.9), ¿cuál es la normal aproximante?",
+  "o": [
+   "N(108, 3.29)",
+   "N(108, 10.8)",
+   "N(12, 3.29)",
+   "N(120, 0.9)"
+  ],
+  "c": 0,
+  "e": "n·p = 108 ≥ 5 y n·q = 12 ≥ 5. μ = 108 y σ = √(120·0.9·0.1) = √10.8 ≈ 3.29."
+ },
+ {
+  "q": "Cada usuario que desbloquea un patinete tiene probabilidad 0.9 de completar su trayecto sin incidencias. Si 120 usuarios desbloquean un patinete, ¿cuál es la probabilidad aproximada de que al menos 110 lo completen sin incidencias?",
+  "o": [
+   "≈ 0.3228",
+   "≈ 0.2709",
+   "≈ 0.2236",
+   "≈ 0.6772"
+  ],
+  "c": 0,
+  "e": "X' ~ N(108, 3.29). P(X ≥ 110) ≈ P(X' ≥ 109.5) = P(Z ≥ 0.46) = 1 − 0.6772 = 0.3228."
+ },
+ {
+  "q": "Con los mismos 120 usuarios (p = 0.9), ¿cuál es la probabilidad aproximada de que como mucho 105 completen el trayecto sin incidencias?",
+  "o": [
+   "≈ 0.2236",
+   "≈ 0.1446",
+   "≈ 0.1814",
+   "≈ 0.7764"
+  ],
+  "c": 0,
+  "e": "P(X ≤ 105) ≈ P(X' ≤ 105.5); z = (105.5 − 108)/3.29 ≈ -0.76. P(Z ≤ −0.76) = 1 − 0.7764 = 0.2236."
+ },
+ {
+  "q": "Se lanza 100 veces una moneda equilibrada. ¿Cuál es la probabilidad aproximada de obtener exactamente 50 caras?",
+  "o": [
+   "≈ 0.0796",
+   "0",
+   "≈ 0.5398",
+   "≈ 0.0398"
+  ],
+  "c": 0,
+  "e": "X' ~ N(50, 5). P(X = 50) ≈ P(49.5 ≤ X' ≤ 50.5) = P(−0.1 ≤ Z ≤ 0.1) = 2·0.5398 − 1 = 0.0796."
+ },
+ {
+  "q": "¿Cuál de estas binomiales se puede aproximar por una normal según el criterio n·p ≥ 5 y n·(1 − p) ≥ 5?",
+  "o": [
+   "B(60, 0.2)",
+   "B(40, 0.1)",
+   "B(200, 0.02)",
+   "B(30, 0.9)"
+  ],
+  "c": 0,
+  "e": "B(60, 0.2): n·p = 12 y n·q = 48. En las otras: 40·0.1 = 4, 200·0.02 = 4 y 30·0.1 = 3, todas menores que 5."
+ },
+ {
+  "q": "El 30 % de las alumnas de un instituto usa transporte público. Se eligen 150 al azar. ¿Probabilidad aproximada de que más de 50 lo usen?",
+  "o": [
+   "≈ 0.1635",
+   "≈ 0.2119",
+   "≈ 0.1867",
+   "≈ 0.8365"
+  ],
+  "c": 0,
+  "e": "X' ~ N(45, 5.61). P(X &gt; 50) ≈ P(X' ≥ 50.5) = P(Z ≥ 0.98) = 1 − 0.8365 = 0.1635."
+ },
+ {
+  "q": "El 30 % de las alumnas de un instituto usa transporte público. Se eligen 150 al azar. ¿Probabilidad aproximada de que entre 40 y 50, ambos incluidos, lo usen?",
+  "o": [
+   "≈ 0.6730",
+   "≈ 0.6266",
+   "≈ 0.5762",
+   "≈ 0.8365"
+  ],
+  "c": 0,
+  "e": "P(40 ≤ X ≤ 50) ≈ P(39.5 ≤ X' ≤ 50.5) = P(−0.98 ≤ Z ≤ 0.98) = 2·0.8365 − 1 = 0.6730."
+ },
+ {
+  "q": "El 30 % de las alumnas de un instituto usa transporte público. Se eligen 150 al azar. ¿Probabilidad aproximada de que menos de 35 lo usen?",
+  "o": [
+   "≈ 0.0307",
+   "≈ 0.0455",
+   "≈ 0.0375",
+   "≈ 0.9693"
+  ],
+  "c": 0,
+  "e": "P(X &lt; 35) = P(X ≤ 34) ≈ P(X' ≤ 34.5); z = (34.5 − 45)/5.61 ≈ −1.87. P(Z ≤ −1.87) = 1 − 0.9693 = 0.0307."
+ },
+ {
+  "q": "Se lanza un dado 180 veces y X es el número de seises. ¿Probabilidad aproximada de obtener al menos 35 seises?",
+  "o": [
+   "≈ 0.1841",
+   "≈ 0.1357",
+   "≈ 0.1587",
+   "≈ 0.8159"
+  ],
+  "c": 0,
+  "e": "n·p = 30, n·q = 150, σ = √25 = 5. P(X ≥ 35) ≈ P(X' ≥ 34.5) = P(Z ≥ 0.9) = 1 − 0.8159 = 0.1841."
+ },
+ {
+  "q": "Se lanza un dado 180 veces y X es el número de seises. ¿Probabilidad aproximada de obtener entre 25 y 35 seises, ambos incluidos?",
+  "o": [
+   "≈ 0.7286",
+   "≈ 0.6826",
+   "≈ 0.6318",
+   "≈ 0.8643"
+  ],
+  "c": 0,
+  "e": "X' ~ N(30, 5). P(24.5 ≤ X' ≤ 35.5) = P(−1.1 ≤ Z ≤ 1.1) = 2·0.8643 − 1 = 0.7286."
+ },
+ {
+  "q": "Se lanza un dado 180 veces y X es el número de seises. ¿Probabilidad aproximada de obtener exactamente 32 seises?",
+  "o": [
+   "≈ 0.0736",
+   "0",
+   "≈ 0.6915",
+   "≈ 0.3821"
+  ],
+  "c": 0,
+  "e": "P(X = 32) ≈ P(31.5 ≤ X' ≤ 32.5) = P(0.3 ≤ Z ≤ 0.5) = 0.6915 − 0.6179 = 0.0736."
+ },
+ {
+  "q": "En una binomial X ~ B(250, 0.4), ¿cuál es la normal aproximante?",
+  "o": [
+   "N(100, 7.75)",
+   "N(100, 60)",
+   "N(150, 7.75)",
+   "N(100, 10)"
+  ],
+  "c": 0,
+  "e": "μ = 250·0.4 = 100 y σ = √(250·0.4·0.6) = √60 ≈ 7.75."
+ },
+ {
+  "q": "Un test tiene 100 preguntas de 4 opciones y una alumna contesta todas al azar. ¿Probabilidad aproximada de acertar al menos 30?",
+  "o": [
+   "≈ 0.1492",
+   "≈ 0.1020",
+   "≈ 0.1251",
+   "≈ 0.8508"
+  ],
+  "c": 0,
+  "e": "X ~ B(100, 0.25) ≈ X' ~ N(25, 4.33). P(X ≥ 30) ≈ P(X' ≥ 29.5) = P(Z ≥ 1.04) = 1 − 0.8508 = 0.1492."
+ },
+ {
+  "q": "Un test tiene 100 preguntas de 4 opciones y una alumna contesta todas al azar. ¿Probabilidad aproximada de acertar menos de 20?",
+  "o": [
+   "≈ 0.1020",
+   "≈ 0.1492",
+   "≈ 0.1251",
+   "≈ 0.8980"
+  ],
+  "c": 0,
+  "e": "P(X &lt; 20) = P(X ≤ 19) ≈ P(X' ≤ 19.5); z = (19.5 − 25)/4.33 ≈ −1.27. P(Z ≤ −1.27) = 1 − 0.8980 = 0.1020."
+ },
+ {
+  "q": "Una moneda trucada da cara con probabilidad 0.1. ¿Cuál es el menor número de lanzamientos n que permite aproximar el número de caras por una normal?",
+  "o": [
+   "n = 50",
+   "n = 6",
+   "n = 30",
+   "n = 5"
+  ],
+  "c": 0,
+  "e": "n·0.1 ≥ 5 exige n ≥ 50 y n·0.9 ≥ 5 exige n ≥ 6. Deben cumplirse las dos: n ≥ 50."
+ },
+ {
+  "q": "El 80 % de las personas de una ciudad está vacunada. Se eligen 200 al azar. ¿Probabilidad aproximada de que como mucho 150 estén vacunadas?",
+  "o": [
+   "≈ 0.0465",
+   "≈ 0.0314",
+   "≈ 0.0384",
+   "≈ 0.9535"
+  ],
+  "c": 0,
+  "e": "X' ~ N(160, 5.66) (σ = √32). P(X ≤ 150) ≈ P(X' ≤ 150.5); z = −9.5/5.66 ≈ −1.68. P(Z ≤ −1.68) = 1 − 0.9535 = 0.0465."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.6 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b6_intro.html">Bloque 6</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 6 · Práctica libre</span>
+    <h1>Lectura inversa de la tabla Z</h1>
+    <p>Ejercicios aleatorios de teoría (los casos de la lectura inversa) y de aplicación (hallar z, valores de X, percentiles, μ y σ). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b6_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_tema4_intro.html">Tema 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "En la lectura inversa de la tabla Z, ¿qué dato conoces y qué buscas?",
+  "o": [
+   "Conoces una probabilidad y buscas el valor z que la deja a su izquierda",
+   "Conoces el valor z y buscas su probabilidad acumulada",
+   "Conoces σ y buscas la media μ",
+   "Conoces x y buscas directamente P(X ≤ x)"
+  ],
+  "c": 0,
+  "e": "Es el camino al revés que en el Bloque 4: se busca la probabilidad en el interior de la tabla y se lee el z en la fila y la columna."
+ },
+ {
+  "q": "Si P(Z ≤ k) = p con p &gt; 0.5, ¿qué signo tiene k?",
+  "o": [
+   "Positivo, porque deja a su izquierda más de la mitad del área",
+   "Negativo, porque deja a su izquierda más de la mitad del área",
+   "Es siempre k = 0",
+   "Depende de la media de la variable"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ 0) = 0.5; para acumular más de 0.5 hay que pasar a la derecha del 0, así que k &gt; 0."
+ },
+ {
+  "q": "Si P(Z ≤ k) = p con p &lt; 0.5, ¿qué haces con la tabla?",
+  "o": [
+   "Buscas 1 − p, lees el valor y le cambias el signo",
+   "Buscas p directamente y el valor leído es k",
+   "Buscas 1 − p y el valor leído es k, sin cambiar el signo",
+   "Buscas p/2 y le cambias el signo al valor leído"
+  ],
+  "c": 0,
+  "e": "La tabla solo tiene probabilidades ≥ 0.5. Por simetría P(Z ≤ −a) = 1 − P(Z ≤ a), así que se busca 1 − p y k = −a."
+ },
+ {
+  "q": "Si P(Z ≥ k) = p, ¿qué probabilidad buscas en el interior de la tabla?",
+  "o": [
+   "1 − p, porque P(Z ≤ k) = 1 − p",
+   "p, porque la tabla da P(Z ≥ k)",
+   "p/2, porque hay dos colas",
+   "(1 + p)/2, como en el intervalo centrado"
+  ],
+  "c": 0,
+  "e": "La tabla da áreas a la izquierda: P(Z ≤ k) = 1 − P(Z ≥ k) = 1 − p."
+ },
+ {
+  "q": "Para el intervalo centrado P(−k ≤ Z ≤ k) = p, ¿qué probabilidad buscas en la tabla?",
+  "o": [
+   "(1 + p)/2",
+   "p/2",
+   "1 − p",
+   "p"
+  ],
+  "c": 0,
+  "e": "Fuera del intervalo queda 1 − p, repartido en dos colas iguales de (1 − p)/2. Por tanto P(Z ≤ k) = p + (1 − p)/2 = (1 + p)/2."
+ },
+ {
+  "q": "Una vez hallado z, ¿cómo obtienes el valor x de X ~ N(μ, σ)?",
+  "o": [
+   "x = μ + z·σ",
+   "x = (z − μ)/σ",
+   "x = μ + z·σ²",
+   "x = z·μ + σ"
+  ],
+  "c": 0,
+  "e": "Se deshace la tipificación z = (x − μ)/σ despejando x: x = μ + z·σ."
+ },
+ {
+  "q": "Si la probabilidad que buscas no aparece exacta en la tabla, ¿qué dos procedimientos acepta la PEvAU?",
+  "o": [
+   "Interpolar entre los dos valores vecinos o tomar el valor más cercano de la tabla",
+   "Redondear p a un decimal o usar la regla 68-95-99.7",
+   "Tomar siempre el valor de la fila sin mirar la columna",
+   "Tomar siempre z = 0 o z = 1"
+  ],
+  "c": 0,
+  "e": "Ambos son válidos: interpolar reparte la diferencia proporcionalmente; el valor más cercano toma el z cuya probabilidad está más próxima a p."
+ },
+ {
+  "q": "¿Qué significa «el percentil 30» de una variable X?",
+  "o": [
+   "El valor x tal que P(X ≤ x) = 0.30",
+   "El valor x tal que P(X ≥ x) = 0.30",
+   "El valor x = 0.30·μ",
+   "El valor x = μ + 0.30·σ"
+  ],
+  "c": 0,
+  "e": "El percentil 30 deja por debajo el 30 % de los datos: P(X ≤ x) = 0.30."
+ },
+ {
+  "q": "La nota mínima a que deja por encima al 10 % superior cumple…",
+  "o": [
+   "P(X ≥ a) = 0.10, es decir, P(X ≤ a) = 0.90",
+   "P(X ≤ a) = 0.10",
+   "P(X ≥ a) = 0.90",
+   "P(−a ≤ X ≤ a) = 0.10"
+  ],
+  "c": 0,
+  "e": "«El 10 % superior» es el área a la derecha de a: P(X ≥ a) = 0.10, que equivale a P(X ≤ a) = 0.90."
+ },
+ {
+  "q": "Si x es el percentil 20 de X ~ N(μ, σ), ¿qué signo tiene z = (x − μ)/σ?",
+  "o": [
+   "Negativo, porque x está por debajo de la media",
+   "Positivo, porque las probabilidades son positivas",
+   "Es siempre z = 0",
+   "Depende del valor de σ"
+  ],
+  "c": 0,
+  "e": "La media es el percentil 50; el percentil 20 queda a su izquierda, así que x &lt; μ y z &lt; 0."
+ },
+ {
+  "q": "¿Por qué el k que cumple P(−k ≤ Z ≤ k) = 0.95 es 1.96 y no 1.645?",
+  "o": [
+   "Porque deja 0.025 en cada cola, así que se busca P(Z ≤ k) = 0.975",
+   "Porque P(Z ≤ 1.96) = 0.95",
+   "Porque 1.645 solo sirve para valores negativos de z",
+   "Porque 1.96 es el doble de 0.98"
+  ],
+  "c": 0,
+  "e": "Con 0.95 en el centro quedan 0.025 en cada cola: P(Z ≤ k) = 0.975 → k = 1.96. El 1.645 corresponde a P(Z ≤ k) = 0.95."
+ },
+ {
+  "q": "Si P(Z ≤ k) = 0.5, ¿cuánto vale k?",
+  "o": [
+   "k = 0",
+   "k = 0.5",
+   "k = 1",
+   "k = −0.5"
+  ],
+  "c": 0,
+  "e": "La N(0, 1) es simétrica respecto de 0, que deja exactamente la mitad del área a cada lado."
+ },
+ {
+  "q": "Conoces μ y P(X ≤ a) = p, pero no σ. ¿Cómo hallas σ?",
+  "o": [
+   "Buscas z con P(Z ≤ z) = p y despejas σ de z = (a − μ)/σ",
+   "Calculas σ = p·μ",
+   "Calculas σ = a − μ",
+   "No se puede hallar σ con un solo dato"
+  ],
+  "c": 0,
+  "e": "La probabilidad da z por lectura inversa; después σ = (a − μ)/z."
+ },
+ {
+  "q": "Si conoces dos probabilidades de X ~ N(μ, σ) y no conoces ni μ ni σ, ¿qué obtienes al tipificar?",
+  "o": [
+   "Un sistema de dos ecuaciones lineales con incógnitas μ y σ",
+   "Una ecuación de segundo grado en σ",
+   "Una sola ecuación con dos incógnitas, que no tiene solución única",
+   "Directamente μ, como la media de los dos valores de x"
+  ],
+  "c": 0,
+  "e": "Cada dato da una ecuación x = μ + z·σ; con dos datos se resuelve el sistema lineal."
+ },
+ {
+  "q": "Al buscar k con P(Z ≥ k) = 0.30, ¿qué signo tiene k?",
+  "o": [
+   "Positivo, porque a su derecha queda menos de la mitad del área",
+   "Negativo, porque 0.30 &lt; 0.5",
+   "Es siempre k = 0",
+   "Depende de la media de la variable"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = 1 − 0.30 = 0.70 &gt; 0.5, así que k está a la derecha del 0."
+ },
+ {
+  "q": "Buscas k con P(Z ≤ k) = 0.9000. La tabla da P(Z ≤ 1.28) = 0.8997 y P(Z ≤ 1.29) = 0.9015. ¿Qué significa interpolar?",
+  "o": [
+   "Repartir la diferencia proporcionalmente: k ≈ 1.28 + 0.01·(0.0003/0.0018) ≈ 1.2817",
+   "Tomar siempre el punto medio, k = 1.285",
+   "Tomar 1.29 porque su probabilidad es mayor que 0.9",
+   "Sumar las dos probabilidades y dividir entre 2"
+  ],
+  "c": 0,
+  "e": "0.9000 está a 0.0003 de 0.8997 sobre una diferencia total de 0.0018; se avanza esa fracción de 0.01: k ≈ 1.2817. Por valor más cercano saldría 1.28."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Halla k tal que P(Z ≤ k) = 0.9332.",
+  "o": [
+   "k = 1.50",
+   "k = −1.50",
+   "k = 0.93",
+   "k = 1.83"
+  ],
+  "c": 0,
+  "e": "0.9332 aparece en la tabla en la fila 1.5 y la columna 0.00, así que k = 1.50."
+ },
+ {
+  "q": "Halla k tal que P(Z ≤ k) = 0.1151.",
+  "o": [
+   "k = −1.20",
+   "k = 1.20",
+   "k = −0.12",
+   "k = 0.88"
+  ],
+  "c": 0,
+  "e": "0.1151 &lt; 0.5, así que k es negativo. 1 − 0.1151 = 0.8849 = P(Z ≤ 1.20), luego k = −1.20."
+ },
+ {
+  "q": "Halla k tal que P(Z ≥ k) = 0.0228.",
+  "o": [
+   "k = 2.00",
+   "k = −2.00",
+   "k = 0.02",
+   "k = 1.00"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = 1 − 0.0228 = 0.9772 = P(Z ≤ 2.00), así que k = 2.00."
+ },
+ {
+  "q": "Halla k tal que P(Z ≥ k) = 0.8413.",
+  "o": [
+   "k = −1.00",
+   "k = 1.00",
+   "k = −0.16",
+   "k = 0.84"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = 1 − 0.8413 = 0.1587 &lt; 0.5, así que k es negativo; como P(Z ≤ 1.00) = 0.8413, k = −1.00."
+ },
+ {
+  "q": "Halla k tal que P(−k ≤ Z ≤ k) = 0.95.",
+  "o": [
+   "k = 1.96",
+   "k = 1.645",
+   "k = 2.575",
+   "k = 0.95"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = (1 + 0.95)/2 = 0.975 = P(Z ≤ 1.96), así que k = 1.96."
+ },
+ {
+  "q": "Halla k tal que P(−k ≤ Z ≤ k) = 0.8664.",
+  "o": [
+   "k = 1.50",
+   "k = 1.11",
+   "k = 0.50",
+   "k = 1.83"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = (1 + 0.8664)/2 = 0.9332 = P(Z ≤ 1.50). Si buscas 0.8664 directamente, te sale 1.11: error típico."
+ },
+ {
+  "q": "Halla k tal que P(Z ≤ k) = 0.90 (usa el valor más cercano de la tabla).",
+  "o": [
+   "k = 1.28",
+   "k = −1.28",
+   "k = 1.645",
+   "k = 0.90"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ 1.28) = 0.8997 es el valor más cercano a 0.90 (P(Z ≤ 1.29) = 0.9015). Interpolando sale 1.2817 ≈ 1.28."
+ },
+ {
+  "q": "X ~ N(60, 8). Halla a tal que P(X ≤ a) = 0.9772.",
+  "o": [
+   "a = 76",
+   "a = 44",
+   "a = 62",
+   "a = 188"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ 2.00) = 0.9772, así que z = 2. a = 60 + 2·8 = 76."
+ },
+ {
+  "q": "Las notas de un examen siguen N(6, 1.5). ¿Qué nota mínima deja por encima al 10 % superior?",
+  "o": [
+   "≈ 7.92",
+   "≈ 4.08",
+   "≈ 7.28",
+   "≈ 8.47"
+  ],
+  "c": 0,
+  "e": "P(X ≥ a) = 0.10 → P(Z ≤ z) = 0.90 → z ≈ 1.28. a = 6 + 1.28·1.5 ≈ 7.92 (interpolando, 7.92 también)."
+ },
+ {
+  "q": "El peso de los recién nacidos sigue N(3.3, 0.5) kg. Halla el percentil 15.",
+  "o": [
+   "≈ 2.78 kg",
+   "≈ 3.82 kg",
+   "≈ 3.23 kg",
+   "≈ 2.26 kg"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ z) = 0.15 → buscas 0.85: el más cercano es P(Z ≤ 1.04) = 0.8508, así que z ≈ −1.04. x = 3.3 − 1.04·0.5 = 2.78 kg (interpolando, 2.78 también)."
+ },
+ {
+  "q": "El tiempo de un trayecto sigue N(25, 4) minutos. ¿Qué tiempo solo es superado por el 5 % de los trayectos?",
+  "o": [
+   "≈ 31.6 min",
+   "≈ 18.4 min",
+   "≈ 26.6 min",
+   "≈ 32.8 min"
+  ],
+  "c": 0,
+  "e": "P(X ≥ a) = 0.05 → P(Z ≤ z) = 0.95, entre 0.9495 (1.64) y 0.9505 (1.65): z ≈ 1.645. a = 25 + 1.645·4 ≈ 31.6 min."
+ },
+ {
+  "q": "El tiempo de un trayecto sigue N(25, 4) minutos. ¿Entre qué valores, centrados en la media, está el 95 % de los trayectos?",
+  "o": [
+   "Entre 17.16 y 32.84 min",
+   "Entre 18.42 y 31.58 min",
+   "Entre 23.04 y 26.96 min",
+   "Entre −6.36 y 56.36 min"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ k) = (1 + 0.95)/2 = 0.975 → k = 1.96. 25 ± 1.96·4 = 25 ± 7.84, es decir, entre 17.16 y 32.84."
+ },
+ {
+  "q": "X ~ N(μ, 4) y P(X ≤ 30) = 0.8413. Halla μ.",
+  "o": [
+   "μ = 26",
+   "μ = 34",
+   "μ = 29",
+   "μ = 26.63"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ 1.00) = 0.8413, así que (30 − μ)/4 = 1 y μ = 30 − 4 = 26."
+ },
+ {
+  "q": "X ~ N(50, σ) y P(X ≥ 62) = 0.0228. Halla σ.",
+  "o": [
+   "σ = 6",
+   "σ = 36",
+   "σ = 12",
+   "σ = 3"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ z) = 1 − 0.0228 = 0.9772 → z = 2. (62 − 50)/σ = 2, así que σ = 6."
+ },
+ {
+  "q": "X ~ N(μ, σ) con P(X ≤ 40) = 0.0228 y P(X ≤ 70) = 0.8413. Halla μ y σ.",
+  "o": [
+   "μ = 60, σ = 10",
+   "μ = 55, σ = 15",
+   "μ = 50, σ = 20",
+   "μ = 60, σ = 100"
+  ],
+  "c": 0,
+  "e": "0.0228 → z = −2 y 0.8413 → z = 1. Sistema: μ − 2σ = 40 y μ + σ = 70 → 3σ = 30, σ = 10 y μ = 60."
+ },
+ {
+  "q": "X ~ N(100, 20). Halla a tal que P(X ≥ a) = 0.6915.",
+  "o": [
+   "a = 90",
+   "a = 110",
+   "a = 99.5",
+   "a = 113.8"
+  ],
+  "c": 0,
+  "e": "P(Z ≤ z) = 1 − 0.6915 = 0.3085 &lt; 0.5, así que z es negativo; como P(Z ≤ 0.5) = 0.6915, z = −0.5. a = 100 − 0.5·20 = 90."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

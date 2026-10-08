@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.5 Práctica — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema1_intro.html">Tema 1</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_b5_intro.html">Bloque 5</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 5 · Práctica libre</span>
+    <h1>Función de distribución</h1>
+    <p>Ejercicios aleatorios de teoría (función de distribución, probabilidad acumulada) y de aplicación (cálculo de F(x) y probabilidades a partir de ella). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_b5_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_tema1_intro.html">Tema 1 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué representa la función de distribución F(x) de una variable aleatoria?",
+  "o": [
+   "La probabilidad acumulada P(X≤x)",
+   "La probabilidad de que X valga exactamente x",
+   "El valor esperado de X",
+   "La varianza de X"
+  ],
+  "c": 0,
+  "e": "F(x) = P(X ≤ x): la probabilidad acumulada de que X tome un valor menor o igual que x. P(X = x) es la distribución de probabilidad, no F."
+ },
+ {
+  "q": "¿Cuál es la fórmula de F(x)?",
+  "o": [
+   "F(x) = P(X≤x)",
+   "F(x) = P(X=x)",
+   "F(x) = P(X≥x)",
+   "F(x) = P(X &lt; x)"
+  ],
+  "c": 0,
+  "e": "Por definición, F(x) = P(X ≤ x), con \"menor o igual\". P(X &lt; x) no incluye el propio x."
+ },
+ {
+  "q": "¿Entre qué valores está siempre F(x)?",
+  "o": [
+   "Entre 0 y 1",
+   "Entre -1 y 1",
+   "Entre 0 y el valor máximo de X",
+   "No tiene límites fijos"
+  ],
+  "c": 0,
+  "e": "F(x) es una probabilidad, así que siempre está entre 0 y 1."
+ },
+ {
+  "q": "¿Qué valor toma F(x) cuando x tiende a -∞?",
+  "o": [
+   "0",
+   "1",
+   "0.5",
+   "No está definido"
+  ],
+  "c": 0,
+  "e": "Para x muy pequeño no queda ningún valor de X por debajo, así que la probabilidad acumulada tiende a 0."
+ },
+ {
+  "q": "¿Qué valor toma F(x) cuando x es mayor o igual que el máximo valor de X?",
+  "o": [
+   "1",
+   "0",
+   "0.5",
+   "El valor máximo de X"
+  ],
+  "c": 0,
+  "e": "Si x ≥ máximo valor de X, ya están acumulados todos los valores, así que F(x) = 1."
+ },
+ {
+  "q": "¿La función de distribución puede disminuir en algún punto?",
+  "o": [
+   "No, nunca; es siempre no decreciente",
+   "Sí, si X toma valores negativos",
+   "Sí, en los puntos donde P(X=x)=0",
+   "Solo si X es continua"
+  ],
+  "c": 0,
+  "e": "F nunca baja: es no decreciente. Al aumentar x se van acumulando más valores, nunca se quitan, aunque X tome valores negativos."
+ },
+ {
+  "q": "¿Por qué F(x) es siempre no decreciente?",
+  "o": [
+   "Porque cada P(X≤x) solo puede sumar probabilidad a medida que x aumenta, nunca restarla",
+   "Porque así lo exige la regla de Laplace",
+   "Porque las probabilidades individuales siempre aumentan",
+   "No hay ninguna razón matemática, es una convención"
+  ],
+  "c": 0,
+  "e": "Si x₁ &lt; x₂, el suceso X ≤ x₁ está contenido en X ≤ x₂, así que F(x₁) ≤ F(x₂): al crecer x solo se suma probabilidad."
+ },
+ {
+  "q": "¿Qué forma tiene la gráfica de F(x) para una variable aleatoria discreta?",
+  "o": [
+   "Una función escalonada (en forma de escalera)",
+   "Una línea recta",
+   "Una curva suave sin saltos",
+   "Un conjunto de puntos aislados"
+  ],
+  "c": 0,
+  "e": "En una variable discreta F es constante entre valores consecutivos y salta en cada valor de X, así que su gráfica es escalonada."
+ },
+ {
+  "q": "Si X es discreta y toma los valores 0, 1, 2, 3 (cada uno con probabilidad positiva), ¿en cuántos puntos \"salta\" la gráfica de F(x)?",
+  "o": [
+   "En 4 puntos, uno por cada valor que toma X",
+   "En 3 puntos",
+   "En un único punto",
+   "En infinitos puntos"
+  ],
+  "c": 0,
+  "e": "F salta en cada valor con probabilidad positiva: 0, 1, 2 y 3, así que hay 4 saltos."
+ },
+ {
+  "q": "¿Cómo se relaciona la altura de cada salto de F(x) con la distribución de probabilidad?",
+  "o": [
+   "La altura del salto en x=xᵢ es exactamente P(X=xᵢ)",
+   "La altura es siempre 1/n",
+   "No hay relación entre ambas",
+   "La altura es el doble de P(X=xᵢ)"
+  ],
+  "c": 0,
+  "e": "En x = xᵢ, F aumenta justo lo que se acumula de nuevo, que es P(X = xᵢ). Por eso la altura de cada salto es esa probabilidad."
+ },
+ {
+  "q": "¿Cómo se calcula F(2) a partir de la tabla de distribución de X?",
+  "o": [
+   "Sumando todas las probabilidades P(X=xᵢ) para xᵢ≤2",
+   "Multiplicando P(X=2) por 2",
+   "Restando 1 menos P(X=2)",
+   "Sumando solo P(X=2)"
+  ],
+  "c": 0,
+  "e": "F(2) = P(X ≤ 2), así que se suman todas las P(X = xᵢ) con xᵢ ≤ 2."
+ },
+ {
+  "q": "¿Qué diferencia hay entre P(X=2) y F(2)?",
+  "o": [
+   "P(X=2) es la probabilidad de ese valor exacto; F(2) es la acumulada de todos los valores ≤2",
+   "Son exactamente lo mismo",
+   "F(2) es siempre menor que P(X=2)",
+   "P(X=2) no se puede calcular a partir de F"
+  ],
+  "c": 0,
+  "e": "P(X = 2) es la probabilidad de ese valor exacto; F(2) = P(X ≤ 2) acumula todos los valores hasta el 2. Por eso F(2) ≥ P(X = 2)."
+ },
+ {
+  "q": "X es una variable discreta que solo toma valores enteros. Si F(3) = 0.8 y F(2) = 0.5, ¿cuánto vale P(X = 3)?",
+  "o": [
+   "0.3",
+   "0.8",
+   "1.3",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "Como X solo toma valores enteros, P(X = 3) = F(3) − F(2) = 0.8 − 0.5 = 0.3."
+ },
+ {
+  "q": "¿Cómo se calcula P(X &gt; x) a partir de F(x)?",
+  "o": [
+   "P(X &gt; x) = 1 − F(x)",
+   "P(X &gt; x) = F(x)",
+   "P(X &gt; x) = F(x) − 1",
+   "P(X &gt; x) no se puede obtener de F(x)"
+  ],
+  "c": 0,
+  "e": "X &gt; x es el suceso contrario de X ≤ x, así que P(X &gt; x) = 1 − P(X ≤ x) = 1 − F(x)."
+ },
+ {
+  "q": "¿Cómo se calcula P(a &lt; X≤b) a partir de la función de distribución?",
+  "o": [
+   "P(a &lt; X≤b) = F(b) − F(a)",
+   "P(a &lt; X≤b) = F(a) − F(b)",
+   "P(a &lt; X≤b) = F(a) + F(b)",
+   "P(a &lt; X≤b) = F(b) · F(a)"
+  ],
+  "c": 0,
+  "e": "P(a &lt; X ≤ b) = P(X ≤ b) − P(X ≤ a) = F(b) − F(a). Si lo haces al revés, F(a) − F(b), te sale negativo."
+ },
+ {
+  "q": "¿Es la función de distribución exclusiva de las variables discretas?",
+  "o": [
+   "No, también existe para variables continuas, aunque su gráfica no es escalonada",
+   "Sí, solo se define para variables discretas",
+   "Sí, es lo que las diferencia de las continuas",
+   "No, solo existe para variables continuas"
+  ],
+  "c": 0,
+  "e": "F(x) = P(X ≤ x) se define para cualquier variable aleatoria. En las continuas su gráfica es una curva sin saltos, no una escalera."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "X tiene P(X=1)=0.3, P(X=2)=0.4, P(X=3)=0.3. Calcula F(1).",
+  "o": [
+   "0.3",
+   "0.7",
+   "1",
+   "0.4"
+  ],
+  "c": 0,
+  "e": "F(1) = P(X ≤ 1) = P(X = 1) = 0.3, porque 1 es el menor valor de X."
+ },
+ {
+  "q": "X tiene P(X=1)=0.3, P(X=2)=0.4, P(X=3)=0.3. Calcula F(2).",
+  "o": [
+   "0.7",
+   "0.4",
+   "1",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "F(2) = P(X = 1) + P(X = 2) = 0.3 + 0.4 = 0.7."
+ },
+ {
+  "q": "X tiene P(X=1)=0.3, P(X=2)=0.4, P(X=3)=0.3. Calcula F(3).",
+  "o": [
+   "1",
+   "0.7",
+   "0.3",
+   "0.4"
+  ],
+  "c": 0,
+  "e": "F(3) = 0.3 + 0.4 + 0.3 = 1: al llegar al valor máximo ya está todo acumulado."
+ },
+ {
+  "q": "X tiene P(X=0)=0.2, P(X=1)=0.5, P(X=2)=0.3. Calcula P(X≤1) usando F.",
+  "o": [
+   "0.7",
+   "0.5",
+   "0.2",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "P(X ≤ 1) = F(1) = P(X = 0) + P(X = 1) = 0.2 + 0.5 = 0.7."
+ },
+ {
+  "q": "X tiene P(X=0)=0.2, P(X=1)=0.5, P(X=2)=0.3. Calcula P(X &gt; 0).",
+  "o": [
+   "0.8",
+   "0.2",
+   "0.7",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "P(X &gt; 0) = 1 − F(0) = 1 − 0.2 = 0.8."
+ },
+ {
+  "q": "X tiene P(X=1)=0.1, P(X=2)=0.2, P(X=3)=0.3, P(X=4)=0.4. Sabiendo F(2)=0.3 y F(4)=1, calcula P(X=3 o X=4).",
+  "o": [
+   "0.7",
+   "0.3",
+   "0.4",
+   "1"
+  ],
+  "c": 0,
+  "e": "P(X = 3 o X = 4) = P(2 &lt; X ≤ 4) = F(4) − F(2) = 1 − 0.3 = 0.7. También: 0.3 + 0.4 = 0.7."
+ },
+ {
+  "q": "X toma los valores 1, 2, 3 y 4, con F(1) = 0.25, F(2) = 0.6, F(3) = 0.9, F(4) = 1. Calcula P(X = 2).",
+  "o": [
+   "0.35",
+   "0.6",
+   "0.25",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "P(X = 2) = F(2) − F(1) = 0.6 − 0.25 = 0.35. El salto de F en x = 2 es la probabilidad de ese valor."
+ },
+ {
+  "q": "X toma los valores 1, 2, 3 y 4, con F(1) = 0.25, F(2) = 0.6, F(3) = 0.9, F(4) = 1. Calcula P(X=4).",
+  "o": [
+   "0.1",
+   "1",
+   "0.9",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "P(X = 4) = F(4) − F(3) = 1 − 0.9 = 0.1."
+ },
+ {
+  "q": "X tiene F(0)=0.15, F(1)=0.45, F(2)=0.8, F(3)=1. Calcula P(1 &lt; X≤3).",
+  "o": [
+   "0.55",
+   "0.65",
+   "0.2",
+   "0.45"
+  ],
+  "c": 0,
+  "e": "P(1 &lt; X ≤ 3) = F(3) − F(1) = 1 − 0.45 = 0.55."
+ },
+ {
+  "q": "X tiene F(0)=0.15, F(1)=0.45, F(2)=0.8, F(3)=1. Calcula P(X &gt; 1).",
+  "o": [
+   "0.55",
+   "0.45",
+   "0.8",
+   "0.65"
+  ],
+  "c": 0,
+  "e": "P(X &gt; 1) = 1 − F(1) = 1 − 0.45 = 0.55."
+ },
+ {
+  "q": "X tiene P(X=-1)=0.2, P(X=0)=0.3, P(X=1)=0.5. Calcula F(0).",
+  "o": [
+   "0.5",
+   "0.3",
+   "0.8",
+   "0.2"
+  ],
+  "c": 0,
+  "e": "F(0) = P(X = −1) + P(X = 0) = 0.2 + 0.3 = 0.5. No te quedes solo con P(X = 0) = 0.3: F acumula."
+ },
+ {
+  "q": "X tiene P(X=-1)=0.2, P(X=0)=0.3, P(X=1)=0.5. Calcula F(-1).",
+  "o": [
+   "0.2",
+   "0.5",
+   "0.3",
+   "1"
+  ],
+  "c": 0,
+  "e": "F(−1) = P(X ≤ −1) = P(X = −1) = 0.2, porque −1 es el menor valor de X."
+ },
+ {
+  "q": "Si F(x)=0 para x &lt; 2, F(x)=0.4 para 2≤x &lt; 5, F(x)=1 para x≥5, ¿qué valores toma X y con qué probabilidades?",
+  "o": [
+   "X=2 con P=0.4 y X=5 con P=0.6",
+   "X=2 con P=0.6 y X=5 con P=0.4",
+   "Solo X=2 con P=1",
+   "X=0,2,5 equiprobables"
+  ],
+  "c": 0,
+  "e": "F salta en x = 2 de 0 a 0.4, así que P(X = 2) = 0.4, y en x = 5 de 0.4 a 1, así que P(X = 5) = 0.6. Los saltos dan las probabilidades."
+ },
+ {
+  "q": "Si F(x)=0 para x &lt; 2, F(x)=0.4 para 2≤x &lt; 5, F(x)=1 para x≥5, calcula P(X≥5).",
+  "o": [
+   "0.6",
+   "0.4",
+   "1",
+   "0"
+  ],
+  "c": 0,
+  "e": "P(X ≥ 5) = P(X = 5) = 1 − 0.4 = 0.6, porque X solo toma los valores 2 y 5."
+ },
+ {
+  "q": "X tiene P(X=2)=0.1, P(X=4)=0.3, P(X=6)=0.4, P(X=8)=0.2. Calcula F(6).",
+  "o": [
+   "0.8",
+   "0.4",
+   "0.6",
+   "1"
+  ],
+  "c": 0,
+  "e": "F(6) = P(X ≤ 6) = 0.1 + 0.3 + 0.4 = 0.8."
+ },
+ {
+  "q": "X tiene P(X=2)=0.1, P(X=4)=0.3, P(X=6)=0.4, P(X=8)=0.2. Calcula P(X &lt; 6) (sin incluir el 6).",
+  "o": [
+   "0.4",
+   "0.8",
+   "0.1",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "P(X &lt; 6) = P(X ≤ 4) = 0.1 + 0.3 = 0.4. Es F(6) − P(X = 6) = 0.8 − 0.4; si incluyes el 6 te sale 0.8."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

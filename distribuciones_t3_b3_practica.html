@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.3 Práctica — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema3_intro.html">Tema 2</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t3_b3_intro.html">Bloque 3</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 3 · Práctica libre</span>
+    <h1>La distribución binomial</h1>
+    <p>Ejercicios aleatorios de teoría (fórmula de la binomial) y de aplicación (cálculo de P(X=k) en distintos contextos). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t3_b3_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t3_b4_intro.html">Bloque 4 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué representa X ~ B(n, p)?",
+  "o": [
+   "Que X sigue una distribución binomial de parámetros n y p",
+   "Que X es una variable continua",
+   "Que X toma solo el valor n",
+   "Que la probabilidad es siempre p"
+  ],
+  "c": 0,
+  "e": "X ~ B(n, p) se lee \"X sigue una distribución binomial de parámetros n (número de pruebas) y p (probabilidad de éxito)\". Es una variable discreta con valores 0, 1, …, n."
+ },
+ {
+  "q": "¿Cuál es la fórmula de P(X=k) en una binomial?",
+  "o": [
+   "(n sobre k)·pᵏ·q⁽ⁿ⁻ᵏ⁾",
+   "(n sobre k)·p·q",
+   "n·pᵏ",
+   "(n sobre k) + pᵏ·q⁽ⁿ⁻ᵏ⁾"
+  ],
+  "c": 0,
+  "e": "P(X = k) = (n sobre k)·pᵏ·q⁽ⁿ⁻ᵏ⁾: el número de caminos con k éxitos multiplicado por la probabilidad de cada uno. Es un producto, no una suma."
+ },
+ {
+  "q": "¿Qué representa k en la fórmula P(X=k)=(n sobre k)pᵏq⁽ⁿ⁻ᵏ⁾?",
+  "o": [
+   "El número de éxitos cuya probabilidad se calcula",
+   "El número total de pruebas",
+   "La probabilidad de éxito",
+   "La varianza de X"
+  ],
+  "c": 0,
+  "e": "k es el número de éxitos cuya probabilidad quieres calcular; n es el total de pruebas y p la probabilidad de éxito."
+ },
+ {
+  "q": "¿De dónde sale el factor (n sobre k) en la fórmula binomial?",
+  "o": [
+   "Cuenta el número de caminos (secuencias) que tienen exactamente k éxitos",
+   "Es la probabilidad de un único camino",
+   "Es el valor esperado de X",
+   "Es una constante que no depende de k"
+  ],
+  "c": 0,
+  "e": "(n sobre k) cuenta cuántos caminos (secuencias de éxitos y fracasos) tienen exactamente k éxitos. Por ejemplo, con n = 3 hay (3 sobre 2) = 3 caminos con 2 éxitos."
+ },
+ {
+  "q": "¿De dónde sale el factor pᵏ·q⁽ⁿ⁻ᵏ⁾?",
+  "o": [
+   "Es la probabilidad de un camino concreto con k éxitos y n-k fracasos",
+   "Es el número de caminos posibles",
+   "Es la varianza de la distribución",
+   "Es la media de la distribución"
+  ],
+  "c": 0,
+  "e": "Un camino concreto con k éxitos y n − k fracasos tiene probabilidad p·p·…·q·q = pᵏ·q⁽ⁿ⁻ᵏ⁾, porque las pruebas son independientes."
+ },
+ {
+  "q": "¿Qué valores puede tomar k en X ~ B(n, p)?",
+  "o": [
+   "0, 1, 2, ..., n",
+   "Solo 0 y n",
+   "Cualquier número real",
+   "Solo números pares"
+  ],
+  "c": 0,
+  "e": "En n pruebas puedes tener desde 0 hasta n éxitos: X toma los valores 0, 1, 2, …, n (es una variable discreta)."
+ },
+ {
+  "q": "¿Es correcto decir que todos los caminos con el mismo número de éxitos tienen la misma probabilidad?",
+  "o": [
+   "Sí, porque el orden no afecta al producto pᵏ·q⁽ⁿ⁻ᵏ⁾",
+   "No, depende del orden en que ocurran",
+   "Solo si p=0.5",
+   "No, nunca es cierto"
+  ],
+  "c": 0,
+  "e": "Sí: cada camino con k éxitos tiene k factores p y n − k factores q, y el orden de los factores no cambia el producto. Por ejemplo, DDI, DID e IDD valen todos p²·q."
+ },
+ {
+  "q": "¿Cómo se calcula P(X ≥ 2) de forma más simple, usando el complementario?",
+  "o": [
+   "P(X ≥ 2) = 1-[P(X=0)+P(X=1)]",
+   "P(X ≥ 2) = 1-P(X ≤ 2)",
+   "P(X ≥ 2) = 1-P(X=2)",
+   "P(X ≥ 2) = P(X=0)+P(X=1)"
+  ],
+  "c": 0,
+  "e": "Lo contrario de \"al menos 2\" es \"como mucho 1\", así que P(X ≥ 2) = 1 − [P(X = 0) + P(X = 1)]. Restar solo P(X = 2), o restar P(X ≤ 2), es quitar de más o de menos."
+ },
+ {
+  "q": "Si X ~ B(5, 0.5), ¿cuántos valores distintos puede tomar X?",
+  "o": [
+   "6 (de 0 a 5)",
+   "5",
+   "10",
+   "2"
+  ],
+  "c": 0,
+  "e": "X puede valer 0, 1, 2, 3, 4 o 5: son n + 1 = 6 valores."
+ },
+ {
+  "q": "¿Qué relación hay entre la distribución binomial y el Triángulo de Pascal cuando p=0.5?",
+  "o": [
+   "Las probabilidades P(X=k) son los números de la fila n del triángulo divididos entre 2ⁿ",
+   "No hay ninguna relación",
+   "El triángulo solo sirve si p≠0.5",
+   "La relación solo existe si n=3"
+  ],
+  "c": 0,
+  "e": "Con p = 0.5, todos los caminos valen (0.5)ⁿ, así que P(X = k) = (n sobre k)/2ⁿ: las probabilidades son la fila n del triángulo dividida entre 2ⁿ. Por ejemplo, con n = 3: 1/8, 3/8, 3/8, 1/8."
+ },
+ {
+  "q": "¿Se puede calcular P(X=k) sin conocer p?",
+  "o": [
+   "No, se necesita conocer tanto n como p",
+   "Sí, basta con conocer n",
+   "Sí, basta con conocer k",
+   "Sí, siempre vale lo mismo"
+  ],
+  "c": 0,
+  "e": "No: la fórmula (n sobre k)·pᵏ·q⁽ⁿ⁻ᵏ⁾ necesita n y p (y q = 1 − p). Sin p no puedes calcular la probabilidad de cada camino."
+ },
+ {
+  "q": "¿Qué pasa con la fórmula si k=0?",
+  "o": [
+   "P(X=0) = (n sobre 0)·p⁰·qⁿ = qⁿ",
+   "P(X=0) siempre vale 0",
+   "P(X=0) = pⁿ",
+   "La fórmula no se puede aplicar con k=0"
+  ],
+  "c": 0,
+  "e": "Con k = 0: (n sobre 0) = 1 y p⁰ = 1, así que P(X = 0) = qⁿ: todas las pruebas son fracaso."
+ },
+ {
+  "q": "¿Qué pasa con la fórmula si k=n?",
+  "o": [
+   "P(X=n) = (n sobre n)·pⁿ·q⁰ = pⁿ",
+   "P(X=n) siempre vale 0",
+   "P(X=n) = qⁿ",
+   "La fórmula no se puede aplicar con k=n"
+  ],
+  "c": 0,
+  "e": "Con k = n: (n sobre n) = 1 y q⁰ = 1, así que P(X = n) = pⁿ: todas las pruebas son éxito."
+ },
+ {
+  "q": "¿Por qué la suma de todas las P(X=k) para k=0,...,n debe valer 1?",
+  "o": [
+   "Porque son todos los resultados posibles, y las probabilidades de una distribución siempre suman 1",
+   "Porque n siempre vale 1",
+   "Porque cada P(X=k) vale 1/(n+1)",
+   "No tiene por qué sumar 1"
+  ],
+  "c": 0,
+  "e": "Los valores 0, 1, …, n cubren todos los resultados posibles de X, y en cualquier distribución de probabilidad la suma de todas las probabilidades es 1."
+ },
+ {
+  "q": "Si aumentamos n (dejando p fijo), ¿qué le pasa al número de valores posibles de X?",
+  "o": [
+   "Aumenta (hay n+1 valores posibles)",
+   "Disminuye",
+   "No cambia",
+   "Se vuelve infinito"
+  ],
+  "c": 0,
+  "e": "X toma los valores 0, 1, …, n, que son n + 1 valores. Si n aumenta, hay más valores posibles (pero siempre un número finito)."
+ },
+ {
+  "q": "¿La distribución binomial es simétrica siempre?",
+  "o": [
+   "No, solo es simétrica cuando p=0.5",
+   "Sí, siempre es simétrica",
+   "Solo si n es par",
+   "Solo si n es impar"
+  ],
+  "c": 0,
+  "e": "La binomial solo es simétrica cuando p = 0.5. Si p &lt; 0.5 se desplaza hacia valores bajos de X y si p &gt; 0.5, hacia valores altos."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Si X ~ B(5, 0.4), calcula P(X=2)",
+  "o": [
+   "0.3456",
+   "0.4000",
+   "0.2000",
+   "0.1536"
+  ],
+  "c": 0,
+  "e": "P(X = 2) = (5 sobre 2)·0.4²·0.6³ = 10·0.16·0.216 = 0.3456. Si olvidas el (5 sobre 2) te sale un valor diez veces menor."
+ },
+ {
+  "q": "Si X ~ B(4, 0.5), calcula P(X=2)",
+  "o": [
+   "0.375",
+   "0.250",
+   "0.500",
+   "0.0625"
+  ],
+  "c": 0,
+  "e": "P(X = 2) = (4 sobre 2)·0.5²·0.5² = 6·0.0625 = 0.375. 0.0625 es la probabilidad de un solo camino."
+ },
+ {
+  "q": "Si X ~ B(6, 0.3), calcula P(X=0)",
+  "o": [
+   "≈0.1176",
+   "≈0.3000",
+   "≈0.0007",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "P(X = 0) = q⁶ = 0.7⁶ ≈ 0.1176. Ojo: 0.3⁶ ≈ 0.0007 sería P(X = 6)."
+ },
+ {
+  "q": "Si X ~ B(3, 0.6), calcula P(X=3)",
+  "o": [
+   "0.216",
+   "0.600",
+   "0.064",
+   "0.432"
+  ],
+  "c": 0,
+  "e": "P(X = 3) = p³ = 0.6³ = 0.216. 0.064 = 0.4³ sería P(X = 0)."
+ },
+ {
+  "q": "Si X ~ B(5, 0.2), calcula P(X=1)",
+  "o": [
+   "≈0.4096",
+   "0.2000",
+   "≈0.0064",
+   "≈0.8192"
+  ],
+  "c": 0,
+  "e": "P(X = 1) = (5 sobre 1)·0.2·0.8⁴ = 5·0.2·0.4096 = 0.4096."
+ },
+ {
+  "q": "Si X ~ B(4, 0.25), calcula P(X=0)",
+  "o": [
+   "≈0.3164",
+   "0.2500",
+   "≈0.0039",
+   "≈0.6836"
+  ],
+  "c": 0,
+  "e": "P(X = 0) = q⁴ = 0.75⁴ ≈ 0.3164. 0.25⁴ ≈ 0.0039 sería P(X = 4)."
+ },
+ {
+  "q": "Si X ~ B(6, 0.5), calcula P(X=3)",
+  "o": [
+   "0.3125",
+   "0.5000",
+   "0.1563",
+   "0.0156"
+  ],
+  "c": 0,
+  "e": "P(X = 3) = (6 sobre 3)·0.5⁶ = 20/64 = 0.3125."
+ },
+ {
+  "q": "Si X ~ B(5, 0.5), calcula P(X ≤ 1)",
+  "o": [
+   "≈0.1875",
+   "≈0.5000",
+   "≈0.0313",
+   "≈0.3125"
+  ],
+  "c": 0,
+  "e": "P(X ≤ 1) = P(X = 0) + P(X = 1) = 0.5⁵ + 5·0.5⁵ = 6/32 = 0.1875."
+ },
+ {
+  "q": "Si X ~ B(4, 0.6), calcula P(X ≥ 3)",
+  "o": [
+   "≈0.4752",
+   "≈0.3456",
+   "≈0.1296",
+   "≈0.6000"
+  ],
+  "c": 0,
+  "e": "P(X ≥ 3) = P(X = 3) + P(X = 4) = 4·0.6³·0.4 + 0.6⁴ = 0.3456 + 0.1296 = 0.4752. No te olvides de ninguno de los dos términos."
+ },
+ {
+  "q": "Si X ~ B(3, 0.5), calcula P(X ≥ 1) usando el complementario",
+  "o": [
+   "0.875",
+   "0.125",
+   "0.500",
+   "0.750"
+  ],
+  "c": 0,
+  "e": "P(X ≥ 1) = 1 − P(X = 0) = 1 − 0.5³ = 1 − 0.125 = 0.875."
+ },
+ {
+  "q": "Un examen tipo test de 5 preguntas con 4 opciones. Si respondes al azar, calcula P(acertar exactamente 2)",
+  "o": [
+   "≈0.2637",
+   "≈0.2500",
+   "≈0.0625",
+   "≈0.4000"
+  ],
+  "c": 0,
+  "e": "X ~ B(5, 0.25): P(X = 2) = (5 sobre 2)·0.25²·0.75³ = 10·0.0625·0.421875 ≈ 0.2637."
+ },
+ {
+  "q": "El 10% de los clientes de una tienda no paga con tarjeta. De 6 clientes al azar, calcula P(todos pagan con tarjeta)",
+  "o": [
+   "≈0.5314",
+   "≈0.1000",
+   "≈0.9000",
+   "≈0.4686"
+  ],
+  "c": 0,
+  "e": "Si el 10% no paga con tarjeta, la probabilidad de pagar con tarjeta es 0.9. P(los 6 pagan con tarjeta) = 0.9⁶ ≈ 0.5314."
+ },
+ {
+  "q": "Se lanza una moneda 4 veces. Calcula P(exactamente 3 caras)",
+  "o": [
+   "0.25",
+   "0.50",
+   "0.125",
+   "0.375"
+  ],
+  "c": 0,
+  "e": "X ~ B(4, 0.5): P(X = 3) = (4 sobre 3)·0.5⁴ = 4/16 = 0.25."
+ },
+ {
+  "q": "Se lanza un dado 3 veces. Calcula P(exactamente un 6)",
+  "o": [
+   "≈0.3472",
+   "≈0.1667",
+   "≈0.5787",
+   "≈0.0231"
+  ],
+  "c": 0,
+  "e": "X ~ B(3, 1/6): P(X = 1) = 3·(1/6)·(5/6)² = 75/216 ≈ 0.3472. Si olvidas el factor 3 (los tres caminos) te sale ≈ 0.1157."
+ },
+ {
+  "q": "En una fábrica, el 5% de las piezas son defectuosas. De 8 piezas, calcula P(ninguna defectuosa)",
+  "o": [
+   "≈0.6634",
+   "≈0.0500",
+   "≈0.3366",
+   "≈0.9500"
+  ],
+  "c": 0,
+  "e": "Si el 5% son defectuosas, cada pieza es correcta con probabilidad 0.95: P(ninguna defectuosa) = 0.95⁸ ≈ 0.6634."
+ },
+ {
+  "q": "Si X ~ B(10, 0.5), calcula P(X=5)",
+  "o": [
+   "≈0.2461",
+   "0.5000",
+   "≈0.0977",
+   "≈0.1000"
+  ],
+  "c": 0,
+  "e": "P(X = 5) = (10 sobre 5)·0.5¹⁰ = 252/1024 ≈ 0.2461. Aunque 5 es el valor más probable, su probabilidad no es 0.5."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

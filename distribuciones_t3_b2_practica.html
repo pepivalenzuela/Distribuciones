@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.2 Práctica — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema3_intro.html">Tema 2</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t3_b2_intro.html">Bloque 2</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 2 · Práctica libre</span>
+    <h1>El experimento de Bernoulli</h1>
+    <p>Ejercicios aleatorios de teoría (condiciones de Bernoulli) y de aplicación (identificar n, p y q en distintos experimentos). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t3_b2_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t3_b3_intro.html">Bloque 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Cuántos resultados posibles hay en cada prueba de un experimento de Bernoulli?",
+  "o": [
+   "Dos: éxito y fracaso",
+   "Uno solo",
+   "Tres",
+   "Depende del experimento"
+  ],
+  "c": 0,
+  "e": "En cada prueba de Bernoulli solo hay dos resultados: ÉXITO (probabilidad p) y FRACASO (probabilidad q = 1 − p)."
+ },
+ {
+  "q": "¿Qué significa que las pruebas sean independientes?",
+  "o": [
+   "Que el resultado de una prueba no afecta a la probabilidad de las siguientes",
+   "Que todas las pruebas dan el mismo resultado",
+   "Que solo se puede repetir una vez",
+   "Que p cambia en cada prueba"
+  ],
+  "c": 0,
+  "e": "Independencia significa que lo que ocurra en una prueba no cambia las probabilidades de las demás. No quiere decir que salga lo mismo siempre."
+ },
+ {
+  "q": "¿Qué representa q en un experimento de Bernoulli?",
+  "o": [
+   "La probabilidad de fracaso, q=1-p",
+   "La probabilidad de éxito",
+   "El número de pruebas",
+   "La varianza del experimento"
+  ],
+  "c": 0,
+  "e": "q es la probabilidad de fracaso: q = 1 − p, porque éxito y fracaso son complementarios."
+ },
+ {
+  "q": "¿Debe ser constante p en todas las pruebas de un experimento de Bernoulli?",
+  "o": [
+   "Sí, siempre",
+   "No, puede variar libremente",
+   "Solo en la primera prueba",
+   "Solo si n es grande"
+  ],
+  "c": 0,
+  "e": "Sí: la 3ª condición de Bernoulli exige que p sea la misma en todas las pruebas."
+ },
+ {
+  "q": "Lanzar una moneda 10 veces y contar caras, ¿es un experimento de Bernoulli?",
+  "o": [
+   "Sí, cumple las tres condiciones",
+   "No, porque hay más de dos resultados",
+   "No, porque las pruebas no son independientes",
+   "No, porque p cambia"
+  ],
+  "c": 0,
+  "e": "Sí: hay dos resultados (cara o cruz), los lanzamientos son independientes y p = 0.5 no cambia de un lanzamiento a otro."
+ },
+ {
+  "q": "Extraer 5 cartas SIN reposición de una baraja y contar ases, ¿es un experimento de Bernoulli estricto?",
+  "o": [
+   "No, porque la probabilidad cambia en cada extracción",
+   "Sí, cumple las tres condiciones",
+   "Sí, porque hay dos resultados posibles",
+   "No, porque hay más de dos resultados"
+  ],
+  "c": 0,
+  "e": "No: sin reposición, al sacar una carta cambia la composición de la baraja, así que la probabilidad de as varía en cada extracción y las pruebas no son independientes."
+ },
+ {
+  "q": "Extraer 5 cartas CON reposición y contar ases, ¿es un experimento de Bernoulli?",
+  "o": [
+   "Sí, porque cada extracción es independiente y p es constante",
+   "No, porque la reposición cambia la probabilidad",
+   "No, nunca lo es con cartas",
+   "Sí, pero solo si se extraen menos de 3"
+  ],
+  "c": 0,
+  "e": "Sí: al devolver la carta, la baraja vuelve a estar igual, así que p = 4/40 (o 4/52) es constante y las extracciones son independientes."
+ },
+ {
+  "q": "¿Por qué el modelo se llama 'binomial'?",
+  "o": [
+   "Porque en cada prueba solo hay dos resultados posibles",
+   "Porque siempre hay dos pruebas",
+   "Porque n siempre es par",
+   "Porque hay dos parámetros, n y p"
+  ],
+  "c": 0,
+  "e": "En la teoría lo hemos visto así: el nombre viene de que en cada prueba solo hay dos resultados posibles, éxito y fracaso (\"bi\" = dos)."
+ },
+ {
+  "q": "Si p=0.3, ¿cuánto vale q?",
+  "o": [
+   "0.7",
+   "0.3",
+   "1.3",
+   "0.07"
+  ],
+  "c": 0,
+  "e": "q = 1 − p = 1 − 0.3 = 0.7."
+ },
+ {
+  "q": "¿Qué ocurre con la independencia si extraemos una muestra pequeña sin reposición de una población muy grande?",
+  "o": [
+   "Se puede aproximar como si hubiera independencia, porque p apenas cambia",
+   "La independencia se pierde por completo",
+   "Deja de ser un experimento aleatorio",
+   "p se vuelve exactamente 0"
+  ],
+  "c": 0,
+  "e": "Si la población es muy grande frente a la muestra, quitar unos pocos elementos casi no cambia p, así que se puede tratar como si fuera con reposición."
+ },
+ {
+  "q": "Preguntar a 20 personas de la misma familia si les gusta el fútbol, ¿es razonable modelarlo como Bernoulli estricto?",
+  "o": [
+   "No necesariamente, porque no hay independencia real entre familiares",
+   "Sí, siempre es válido preguntar a familiares",
+   "Sí, porque son solo 20 personas",
+   "No, porque el fútbol no es aleatorio"
+  ],
+  "c": 0,
+  "e": "Entre familiares las respuestas suelen estar relacionadas (gustos compartidos), así que no podemos suponer que sean independientes ni que p sea la misma para todos."
+ },
+ {
+  "q": "¿Puede un experimento de Bernoulli tener tres resultados posibles en cada prueba?",
+  "o": [
+   "No, por definición solo tiene dos",
+   "Sí, siempre que p sea constante",
+   "Sí, siempre que sean equiprobables",
+   "Depende del valor de n"
+  ],
+  "c": 0,
+  "e": "Por definición, cada prueba de Bernoulli tiene solo dos resultados. Si un experimento tiene más, hay que redefinir éxito/fracaso (por ejemplo, con un dado: \"sacar un 6\" / \"no sacar un 6\") para que solo queden dos."
+ },
+ {
+  "q": "¿Qué le pasa a un experimento binomial si p cambia entre una prueba y otra?",
+  "o": [
+   "Deja de ser válido para el modelo binomial",
+   "No pasa nada, sigue siendo válido",
+   "Solo afecta a la media",
+   "Se convierte automáticamente en normal"
+  ],
+  "c": 0,
+  "e": "Si p cambia entre pruebas, deja de cumplirse la 3ª condición de Bernoulli y ya no puedes usar B(n, p)."
+ },
+ {
+  "q": "Si el experimento consiste en repetir n veces una prueba de Bernoulli, ¿qué variable aleatoria se define habitualmente?",
+  "o": [
+   "X = número de éxitos en las n pruebas",
+   "X = número de pruebas realizadas",
+   "X = probabilidad de éxito",
+   "X = valor de la última prueba"
+  ],
+  "c": 0,
+  "e": "Al repetir n veces una prueba de Bernoulli, la variable habitual es X = número de éxitos en las n pruebas, que toma valores 0, 1, …, n."
+ },
+ {
+  "q": "¿Es la elección de qué se llama 'éxito' una decisión arbitraria del problema?",
+  "o": [
+   "Sí, se puede llamar éxito a cualquiera de los dos resultados, según convenga",
+   "No, siempre debe ser el resultado más probable",
+   "No, siempre debe ser el resultado deseable",
+   "No, está fijado por convención matemática"
+  ],
+  "c": 0,
+  "e": "Éxito no significa \"algo bueno\": es simplemente el resultado que quieres contar. Puedes elegir cualquiera de los dos, ajustando p y q."
+ },
+ {
+  "q": "Si extraemos 3 bolas sin reposición de una urna con 100 bolas, ¿es razonable aproximar el experimento como binomial?",
+  "o": [
+   "Sí, porque al ser la población mucho más grande que la muestra, p apenas varía",
+   "No, nunca se puede aproximar sin reposición",
+   "Solo si se extraen más de 50 bolas",
+   "No, la aproximación solo vale para monedas"
+  ],
+  "c": 0,
+  "e": "Sacar 3 bolas de 100 apenas cambia la composición de la urna (la muestra es el 3% de la población), así que p casi no varía y la binomial es una buena aproximación."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Se lanza una moneda 8 veces y se cuenta el número de caras. ¿Cuánto vale p (probabilidad de éxito=cara)?",
+  "o": [
+   "0.5",
+   "0.25",
+   "1",
+   "8"
+  ],
+  "c": 0,
+  "e": "El éxito es \"cara\" y la moneda es equilibrada, así que p = 1/2 = 0.5. El 8 es n, no p."
+ },
+ {
+  "q": "Se lanza una moneda 8 veces y se cuenta el número de caras. ¿Cuánto vale n?",
+  "o": [
+   "8",
+   "2",
+   "0.5",
+   "16"
+  ],
+  "c": 0,
+  "e": "n es el número de pruebas: se lanza 8 veces, así que n = 8."
+ },
+ {
+  "q": "El 25% de los tornillos de una caja son defectuosos. Se examinan 10 al azar CON reposición. ¿Cuánto vale p?",
+  "o": [
+   "0.25",
+   "0.75",
+   "10",
+   "0.1"
+  ],
+  "c": 0,
+  "e": "Éxito = \"tornillo defectuoso\", con probabilidad 25% = 0.25. El 10 es n."
+ },
+ {
+  "q": "El 25% de los tornillos de una caja son defectuosos. Se examinan 10 al azar CON reposición, con éxito = \"tornillo defectuoso\". ¿Cuánto vale q?",
+  "o": [
+   "0.75",
+   "0.25",
+   "1",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "q = 1 − p = 1 − 0.25 = 0.75."
+ },
+ {
+  "q": "En un examen tipo test de 20 preguntas con 4 opciones cada una, si respondes al azar, ¿cuánto vale p (acertar)?",
+  "o": [
+   "0.25",
+   "0.2",
+   "0.5",
+   "4"
+  ],
+  "c": 0,
+  "e": "Solo 1 de las 4 opciones es correcta, así que p = 1/4 = 0.25. El 20 es n."
+ },
+ {
+  "q": "Se lanza un dado 6 veces y se cuenta cuántas veces sale múltiplo de 3. ¿Cuánto vale p?",
+  "o": [
+   "1/3 ≈ 0.33",
+   "1/6 ≈ 0.17",
+   "1/2",
+   "2/3"
+  ],
+  "c": 0,
+  "e": "Los múltiplos de 3 en un dado son 3 y 6: p = 2/6 = 1/3 ≈ 0.33. 1/6 sería si solo contaras el 3 o el 6."
+ },
+ {
+  "q": "Se extraen 4 bolas CON reposición de una urna con 3 rojas y 7 azules, contando bolas rojas. ¿Cuánto vale p?",
+  "o": [
+   "0.3",
+   "0.7",
+   "3",
+   "0.4"
+  ],
+  "c": 0,
+  "e": "Hay 3 rojas de 10 bolas: p = 3/10 = 0.3. Como hay reposición, p no cambia entre extracciones."
+ },
+ {
+  "q": "Se extraen 4 bolas CON reposición de una urna con 3 rojas y 7 azules, contando bolas rojas. ¿Es válido aplicar el modelo binomial?",
+  "o": [
+   "Sí, porque hay reposición y las extracciones son independientes",
+   "No, nunca es válido con bolas",
+   "Solo si se extraen menos de 2 bolas",
+   "No, porque hay más azules que rojas"
+  ],
+  "c": 0,
+  "e": "Con reposición la urna vuelve a estar igual tras cada extracción: dos resultados, independencia y p = 0.3 constante. Se cumplen las tres condiciones."
+ },
+ {
+  "q": "Se extraen 4 bolas SIN reposición de una urna con 3 rojas y 7 azules, contando bolas rojas. ¿Es exactamente un experimento de Bernoulli?",
+  "o": [
+   "No, porque la probabilidad cambia en cada extracción",
+   "Sí, es exactamente igual que con reposición",
+   "Sí, porque son solo 4 bolas",
+   "No, porque hay menos rojas que azules"
+  ],
+  "c": 0,
+  "e": "No: sin reposición, si sacas una roja la siguiente tiene probabilidad 2/9 en vez de 3/10. p cambia y las extracciones no son independientes."
+ },
+ {
+  "q": "El 60% de los votantes apoya una medida. Se pregunta a 15 personas al azar de una ciudad de 500000 habitantes. ¿Es razonable aproximar como binomial?",
+  "o": [
+   "Sí, porque la muestra es mucho menor que la población",
+   "No, nunca se puede aproximar en encuestas",
+   "Solo si se pregunta a toda la ciudad",
+   "No, porque el 60% no es exacto"
+  ],
+  "c": 0,
+  "e": "15 personas de 500000 es una fracción minúscula de la población, así que p = 0.6 prácticamente no cambia: la binomial es una aproximación muy buena."
+ },
+ {
+  "q": "En una fábrica, la probabilidad de que una pieza sea defectuosa es 0.02. Se inspeccionan 50 piezas. ¿Cuánto vale n?",
+  "o": [
+   "50",
+   "0.02",
+   "0.98",
+   "2"
+  ],
+  "c": 0,
+  "e": "n es el número de pruebas, es decir, de piezas inspeccionadas: n = 50."
+ },
+ {
+  "q": "En una fábrica, la probabilidad de que una pieza sea defectuosa es 0.02. Se inspeccionan 50 piezas, con éxito = \"pieza defectuosa\". ¿Cuánto vale p?",
+  "o": [
+   "0.02",
+   "0.98",
+   "50",
+   "2"
+  ],
+  "c": 0,
+  "e": "p es la probabilidad de éxito (\"pieza defectuosa\"): p = 0.02. 0.98 sería q."
+ },
+ {
+  "q": "Se lanza una moneda hasta obtener la primera cara. ¿Es esto un experimento binomial (para 'número de éxitos en n pruebas fijas')?",
+  "o": [
+   "No, porque n no está fijado de antemano",
+   "Sí, siempre que sea una moneda",
+   "Sí, con n=1",
+   "No, porque una moneda solo tiene un resultado"
+  ],
+  "c": 0,
+  "e": "En la binomial n está fijado antes de empezar. Aquí el número de lanzamientos depende de cuándo salga la cara, así que no es binomial."
+ },
+ {
+  "q": "Se hacen 5 tiros libres de baloncesto con probabilidad de acierto 0.7 en cada uno, siempre en las mismas condiciones. ¿Cuánto vale q?",
+  "o": [
+   "0.3",
+   "0.7",
+   "5",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "El éxito es acertar (p = 0.7), así que q = 1 − 0.7 = 0.3."
+ },
+ {
+  "q": "En un test médico con sensibilidad del 95%, se analizan 10 muestras independientes de pacientes enfermos. ¿Cuánto vale p (dar positivo en un enfermo)?",
+  "o": [
+   "0.95",
+   "0.05",
+   "10",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "La sensibilidad es la probabilidad de dar positivo estando enfermo: p = 95% = 0.95. 0.05 sería q."
+ },
+ {
+  "q": "En un test médico con sensibilidad del 95%, se analizan 10 muestras independientes de pacientes enfermos. ¿Cuántos resultados posibles hay en cada una de las 10 pruebas?",
+  "o": [
+   "2 (positivo o negativo)",
+   "10",
+   "95",
+   "1"
+  ],
+  "c": 0,
+  "e": "En cada análisis solo hay dos resultados: positivo o negativo. Por eso es una prueba de Bernoulli; el 10 es n."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

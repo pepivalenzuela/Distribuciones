@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.5 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b5_intro.html">Bloque 5</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 5 · Práctica libre</span>
+    <h1>Ejercicios de aplicación</h1>
+    <p>Ejercicios aleatorios de teoría (estrategias de resolución) y de aplicación (problemas reales resueltos con la distribución normal). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b5_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_tema4_intro.html">Tema 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Cuál es el primer paso para resolver cualquier problema de distribución normal?",
+  "o": [
+   "Identificar X ~ N(μ, σ) a partir del enunciado",
+   "Calcular directamente una integral",
+   "Buscar en la tabla Z sin más datos",
+   "Calcular la media de una muestra"
+  ],
+  "c": 0,
+  "e": "Lo primero es leer el enunciado e identificar la variable y sus parámetros, X ~ N(μ, σ); sin μ y σ no se puede tipificar."
+ },
+ {
+  "q": "¿Qué se hace después de identificar μ y σ?",
+  "o": [
+   "Tipificar el valor o los valores de X con Z = (X-μ)/σ",
+   "Calcular la varianza directamente",
+   "Multiplicar μ por σ",
+   "Buscar el percentil 50"
+  ],
+  "c": 0,
+  "e": "Con μ y σ identificados, se tipifica cada valor con Z = (X − μ)/σ para pasar a la N(0, 1) y poder usar la tabla."
+ },
+ {
+  "q": "Si un problema pide un porcentaje en vez de una probabilidad, ¿qué hay que hacer al final?",
+  "o": [
+   "Multiplicar la probabilidad por 100",
+   "Dividir la probabilidad entre 100",
+   "Restar 100 a la probabilidad",
+   "No cambia nada"
+  ],
+  "c": 0,
+  "e": "Un porcentaje es una probabilidad multiplicada por 100: por ejemplo, 0.1587 equivale al 15.87%."
+ },
+ {
+  "q": "¿Qué tipo de problema es el inverso (buscar X a partir de una probabilidad)?",
+  "o": [
+   "Uno donde hay que deshacer la tipificación: X = μ+Z·σ",
+   "Uno que no se puede resolver con la tabla Z",
+   "Uno que requiere una binomial",
+   "Uno donde σ no hace falta"
+  ],
+  "c": 0,
+  "e": "En el problema inverso conocemos la probabilidad y buscamos X: se busca z en la tabla «al revés» y se destipifica con X = μ + z·σ."
+ },
+ {
+  "q": "Una máquina llena latas cuyo contenido sigue una normal. Para hallar el intervalo centrado en la media que contiene el 80% central de las latas, ¿por qué se busca z≈1.28?",
+  "o": [
+   "Porque deja 10% de probabilidad a cada lado, cumpliendo P(-z &lt; Z &lt; z) = 0.80",
+   "Porque 1.28 es la media de Z",
+   "Porque el 80% siempre corresponde a z=1",
+   "Porque es un valor arbitrario"
+  ],
+  "c": 0,
+  "e": "Si el 80% central queda entre −z y z, quedan 10% en cada cola, así que P(Z &lt; z) = 0.90. En la tabla, el valor más cercano a 0.90 es P(Z &lt; 1.28) = 0.8997, por eso z ≈ 1.28."
+ },
+ {
+  "q": "¿Por qué conviene dibujar la campana y sombrear el área pedida antes de calcular?",
+  "o": [
+   "Ayuda a decidir qué caso de la tabla Z aplicar",
+   "Es un paso obligatorio sin utilidad práctica",
+   "Sustituye el cálculo de Z",
+   "Solo sirve para problemas con μ=0"
+  ],
+  "c": 0,
+  "e": "El dibujo muestra qué área se pide (izquierda, derecha o intervalo) y si es mayor o menor que 0.5, lo que ayuda a elegir el caso de la tabla y a detectar errores."
+ },
+ {
+  "q": "Si un problema pide P(X &gt; a) y a está muy por debajo de la media, ¿qué se espera del resultado?",
+  "o": [
+   "Una probabilidad alta, cercana a 1",
+   "Una probabilidad cercana a 0",
+   "Una probabilidad exactamente 0.5",
+   "No se puede estimar sin calcular"
+  ],
+  "c": 0,
+  "e": "Si a está muy por debajo de la media, casi toda la campana queda a su derecha, así que P(X &gt; a) es alta, cercana a 1."
+ },
+ {
+  "q": "¿Qué error es habitual al tipificar?",
+  "o": [
+   "Confundir el orden de la resta (usar μ-X en vez de X-μ), lo que cambia el signo de Z",
+   "Olvidar que σ debe ser positivo",
+   "Usar μ dos veces",
+   "No hay errores habituales"
+  ],
+  "c": 0,
+  "e": "Un error habitual es restar al revés, μ − X en vez de X − μ: Z sale con el signo cambiado y se calcula el área del lado contrario."
+ },
+ {
+  "q": "¿Es necesario redondear Z antes de buscar en la tabla?",
+  "o": [
+   "Sí, normalmente a 2 decimales, según la precisión de la tabla",
+   "No, nunca se redondea",
+   "Solo si Z es negativo",
+   "Solo si Z &gt; 3"
+  ],
+  "c": 0,
+  "e": "La tabla da z con dos decimales (de 0.00 a 4.09), así que se redondea Z a 2 decimales antes de buscarlo, por ejemplo 4/6 ≈ 0.67."
+ },
+ {
+  "q": "¿Qué información del enunciado indica que hay que usar una distribución normal?",
+  "o": [
+   "Que el enunciado dice que la variable sigue una distribución normal (o lo indica como X ~ N(μ, σ))",
+   "Que aparecen las palabras 'al azar'",
+   "Que hay un porcentaje en el enunciado",
+   "Que se piden números combinatorios"
+  ],
+  "c": 0,
+  "e": "Se usa la normal cuando el enunciado dice que la variable sigue una distribución normal (o X ~ N(μ, σ)). Que una variable tenga media y desviación típica no basta, porque toda variable las tiene."
+ },
+ {
+  "q": "En un problema de temperatura, ¿por qué tiene sentido usar una normal y no una binomial?",
+  "o": [
+   "Porque la temperatura es una variable continua, no un conteo de éxitos",
+   "Porque la binomial no existe para temperaturas",
+   "Porque la normal siempre da resultados más precisos",
+   "No hay ninguna razón, ambas sirven igual"
+  ],
+  "c": 0,
+  "e": "La binomial cuenta éxitos en n pruebas (valores 0, 1, …, n); la temperatura se mide y es continua, por eso se modeliza con una normal."
+ },
+ {
+  "q": "¿Qué relación hay entre resolver 'hacia adelante' y 'hacia atrás'?",
+  "o": [
+   "Son procesos inversos: uno tipifica, el otro destipifica",
+   "No tienen relación",
+   "Ambos requieren integrar f(x)",
+   "Solo se puede resolver hacia adelante"
+  ],
+  "c": 0,
+  "e": "Hacia adelante vamos de X a una probabilidad (tipificamos Z = (X − μ)/σ); hacia atrás, de una probabilidad a X (destipificamos X = μ + z·σ). Son procesos inversos."
+ },
+ {
+  "q": "Si el enunciado pide 'el percentil 90', ¿qué significa?",
+  "o": [
+   "El valor de X tal que el 90% de los datos están por debajo de él",
+   "Que hay 90 datos en total",
+   "Que σ=90",
+   "Que Z = 90"
+  ],
+  "c": 0,
+  "e": "El percentil 90 es el valor de X que deja por debajo el 90% de los datos, es decir, el valor a tal que P(X ≤ a) = 0.90."
+ },
+ {
+  "q": "¿Qué tabla o herramienta hace falta consultar en cualquier problema de distribución normal?",
+  "o": [
+   "La tabla de la N(0, 1) (tabla Z)",
+   "El Triángulo de Pascal",
+   "La tabla de números combinatorios",
+   "No hace falta ninguna tabla"
+  ],
+  "c": 0,
+  "e": "En un problema de normal siempre hay que pasar a la N(0, 1) y consultar su tabla (tabla Z). Pascal y los números combinatorios son de la binomial."
+ },
+ {
+  "q": "¿Por qué es útil comprobar el resultado con la regla empírica 68-95-99.7?",
+  "o": [
+   "Permite detectar errores groseros, comparando con una estimación rápida",
+   "Sustituye el cálculo exacto siempre",
+   "Solo sirve para σ=1",
+   "No tiene ninguna utilidad"
+  ],
+  "c": 0,
+  "e": "La regla 68-95-99.7 da una estimación rápida: si tu resultado se aleja mucho de ella, probablemente hay un error de signo o de caso. No sustituye al cálculo con la tabla."
+ },
+ {
+  "q": "Si en un problema de variable continua (no normal) te dan directamente la función de distribución F(x), ¿hace falta tipificar para calcular P(X ≤ a)?",
+  "o": [
+   "No, basta con evaluar F(a)",
+   "Sí, siempre hay que tipificar",
+   "Solo si F(x) es lineal",
+   "Nunca se puede resolver sin μ y σ"
+  ],
+  "c": 0,
+  "e": "Si te dan F(x), ya tienes las probabilidades acumuladas: P(X ≤ a) = F(a), sin tipificar. La tipificación y la tabla son necesarias en la normal, cuya F no se puede evaluar a mano."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "El peso de un producto sigue N(250, 8) gramos. Calcula la probabilidad de que pese menos de 242g.",
+  "o": [
+   "≈0.1587",
+   "≈0.8413",
+   "≈0.5000",
+   "≈0.3413"
+  ],
+  "c": 0,
+  "e": "Z = (242 − 250)/8 = −1. P(X &lt; 242) = P(Z &lt; −1) = 1 − P(Z &lt; 1) = 1 − 0.8413 = 0.1587."
+ },
+ {
+  "q": "El peso de un producto sigue N(250, 8) gramos. Calcula la probabilidad de que pese más de 258g.",
+  "o": [
+   "≈0.1587",
+   "≈0.8413",
+   "≈0.5000",
+   "≈0.6826"
+  ],
+  "c": 0,
+  "e": "Z = (258 − 250)/8 = 1. P(X &gt; 258) = P(Z &gt; 1) = 1 − 0.8413 = 0.1587, igual que P(X &lt; 242) por simetría."
+ },
+ {
+  "q": "El peso de un producto sigue N(250, 8) gramos. Calcula la probabilidad de que pese entre 242 y 258g.",
+  "o": [
+   "≈0.6826",
+   "≈0.1587",
+   "≈0.3174",
+   "≈0.9544"
+  ],
+  "c": 0,
+  "e": "Z va de −1 a 1: P(242 &lt; X &lt; 258) = P(−1 &lt; Z &lt; 1) = 2·0.8413 − 1 = 0.6826."
+ },
+ {
+  "q": "El tiempo de un examen sigue N(60, 10) minutos. Calcula P(T &lt; 50).",
+  "o": [
+   "≈0.1587",
+   "≈0.8413",
+   "≈0.5000",
+   "≈0.3085"
+  ],
+  "c": 0,
+  "e": "Z = (50 − 60)/10 = −1. P(T &lt; 50) = P(Z &lt; −1) = 1 − 0.8413 = 0.1587."
+ },
+ {
+  "q": "El tiempo de un examen sigue N(60, 10) minutos. Calcula P(T &gt; 75).",
+  "o": [
+   "≈0.0668",
+   "≈0.9332",
+   "≈0.1587",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "Z = (75 − 60)/10 = 1.5. P(T &gt; 75) = P(Z &gt; 1.5) = 1 − 0.9332 = 0.0668."
+ },
+ {
+  "q": "Una máquina llena botellas siguiendo N(1000, 15) ml. Calcula P(X &lt; 985).",
+  "o": [
+   "≈0.1587",
+   "≈0.8413",
+   "≈0.5000",
+   "≈0.0228"
+  ],
+  "c": 0,
+  "e": "Z = (985 − 1000)/15 = −1. P(X &lt; 985) = P(Z &lt; −1) = 1 − 0.8413 = 0.1587."
+ },
+ {
+  "q": "Una máquina llena botellas siguiendo N(1000, 15) ml. Calcula el porcentaje de botellas entre 970 y 1030ml.",
+  "o": [
+   "≈95.44%",
+   "≈68.26%",
+   "≈99.7%",
+   "≈50%"
+  ],
+  "c": 0,
+  "e": "Z va de (970 − 1000)/15 = −2 a 2: P(−2 &lt; Z &lt; 2) = 2·0.9772 − 1 = 0.9544, es decir, el 95.44%."
+ },
+ {
+  "q": "La altura de los árboles de un bosque sigue N(15, 3) metros. Calcula P(H &gt; 18).",
+  "o": [
+   "≈0.1587",
+   "≈0.8413",
+   "≈0.5000",
+   "≈0.0228"
+  ],
+  "c": 0,
+  "e": "Z = (18 − 15)/3 = 1. P(H &gt; 18) = P(Z &gt; 1) = 1 − 0.8413 = 0.1587."
+ },
+ {
+  "q": "La altura de los árboles de un bosque sigue N(15, 3) metros. Calcula P(12 &lt; H &lt; 18).",
+  "o": [
+   "≈0.6826",
+   "≈0.1587",
+   "≈0.9544",
+   "≈0.3174"
+  ],
+  "c": 0,
+  "e": "Z va de (12 − 15)/3 = −1 a 1: P(−1 &lt; Z &lt; 1) = 2·0.8413 − 1 = 0.6826."
+ },
+ {
+  "q": "Las notas de un examen siguen N(6, 1.5). Calcula la probabilidad de aprobar (nota ≥ 5).",
+  "o": [
+   "≈0.7486",
+   "≈0.2514",
+   "≈0.5000",
+   "≈0.9772"
+  ],
+  "c": 0,
+  "e": "Z = (5 − 6)/1.5 ≈ −0.67. P(X ≥ 5) = P(Z ≥ −0.67) = P(Z ≤ 0.67) = 0.7486, por simetría. 0.2514 sería suspender."
+ },
+ {
+  "q": "Las notas de un examen siguen N(6, 1.5). Calcula la probabilidad de sacar un sobresaliente (nota ≥ 9).",
+  "o": [
+   "≈0.0228",
+   "≈0.9772",
+   "≈0.1587",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "Z = (9 − 6)/1.5 = 2. P(X ≥ 9) = P(Z ≥ 2) = 1 − 0.9772 = 0.0228."
+ },
+ {
+  "q": "El colesterol de una población sigue N(180, 25) mg/dl. Calcula P(X &gt; 230).",
+  "o": [
+   "≈0.0228",
+   "≈0.9772",
+   "≈0.1587",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "Z = (230 − 180)/25 = 2. P(X &gt; 230) = P(Z &gt; 2) = 1 − 0.9772 = 0.0228."
+ },
+ {
+  "q": "El colesterol de una población sigue N(180, 25) mg/dl. Calcula P(155 &lt; X &lt; 205).",
+  "o": [
+   "≈0.6826",
+   "≈0.9544",
+   "≈0.3174",
+   "≈0.1587"
+  ],
+  "c": 0,
+  "e": "Z va de (155 − 180)/25 = −1 a 1: P(−1 &lt; Z &lt; 1) = 2·0.8413 − 1 = 0.6826."
+ },
+ {
+  "q": "Una fábrica sabe que la duración de sus bombillas sigue N(1200, 100) horas. Calcula P(X &lt; 1000).",
+  "o": [
+   "≈0.0228",
+   "≈0.1587",
+   "≈0.9772",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "Z = (1000 − 1200)/100 = −2. P(X &lt; 1000) = P(Z &lt; −2) = 1 − 0.9772 = 0.0228."
+ },
+ {
+  "q": "Se busca a tal que P(X &lt; a) = 0.90 para X ~ N(500, 50). ¿Qué valor de Z corresponde a esa probabilidad?",
+  "o": [
+   "≈1.28",
+   "≈0.90",
+   "≈1.96",
+   "≈2.33"
+  ],
+  "c": 0,
+  "e": "Buscamos en la tabla «al revés» el z con P(Z &lt; z) = 0.90: el valor más cercano es P(Z &lt; 1.28) = 0.8997, así que z ≈ 1.28. 1.96 y 2.33 corresponden a 0.975 y 0.99."
+ },
+ {
+  "q": "Se busca a tal que P(X &lt; a) = 0.90 para X ~ N(500, 50). Sabiendo que en la tabla P(Z &lt; 1.28) ≈ 0.90, calcula el valor de a.",
+  "o": [
+   "564",
+   "550",
+   "500",
+   "590"
+  ],
+  "c": 0,
+  "e": "Destipificamos: a = μ + z·σ = 500 + 1.28·50 = 500 + 64 = 564."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

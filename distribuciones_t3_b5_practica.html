@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.5 Práctica — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema3_intro.html">Tema 2</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t3_b5_intro.html">Bloque 5</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 5 · Práctica libre</span>
+    <h1>Ejercicios de aplicación</h1>
+    <p>Ejercicios aleatorios de teoría (estrategias para 'al menos', 'como mucho'...) y de aplicación (problemas reales resueltos con la binomial). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t3_b5_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_tema3_intro.html">Tema 2 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "En un problema de control de calidad, ¿qué se suele llamar 'éxito'?",
+  "o": [
+   "El suceso que se quiere contar, según indique el enunciado",
+   "Siempre el resultado más probable",
+   "Siempre 'pieza correcta'",
+   "Siempre 'pieza defectuosa'"
+  ],
+  "c": 0,
+  "e": "Éxito es el suceso que te piden contar, según el enunciado, aunque sea algo \"malo\" (como una pieza defectuosa). No tiene que ser ni el más probable ni el deseable."
+ },
+ {
+  "q": "¿Por qué es importante identificar bien n, p y q antes de aplicar la fórmula?",
+  "o": [
+   "Porque un error en su identificación lleva a un resultado completamente incorrecto",
+   "No es importante, la fórmula se autoajusta",
+   "Solo importa n, p y q son secundarios",
+   "Solo importa en problemas con n grande"
+  ],
+  "c": 0,
+  "e": "Toda la fórmula depende de n, p y q: si confundes p con q, o te equivocas de n, el resultado sale mal aunque hagas bien las cuentas."
+ },
+ {
+  "q": "Al calcular 'al menos k', ¿qué estrategia suele ser más rápida?",
+  "o": [
+   "Usar el complementario: 1 − P(X &lt; k)",
+   "Sumar todos los términos desde 0 hasta n",
+   "Multiplicar P(X=k) por n",
+   "Calcular solo P(X=k)"
+  ],
+  "c": 0,
+  "e": "\"Al menos k\" es P(X ≥ k) = 1 − P(X &lt; k), y normalmente hay menos términos que sumar en P(X &lt; k)."
+ },
+ {
+  "q": "Al calcular 'como mucho k', ¿qué hay que sumar?",
+  "o": [
+   "P(X=0)+P(X=1)+...+P(X=k)",
+   "Solo P(X=k)",
+   "P(X=k)+P(X=k+1)+...+P(X=n)",
+   "1 − P(X=k)"
+  ],
+  "c": 0,
+  "e": "\"Como mucho k\" es P(X ≤ k) = P(X = 0) + P(X = 1) + … + P(X = k), incluido el propio k."
+ },
+ {
+  "q": "¿Qué significa 'exactamente k' en el contexto de la binomial?",
+  "o": [
+   "P(X=k), un único término de la fórmula",
+   "P(X ≤ k)",
+   "P(X ≥ k)",
+   "1 − P(X=k)"
+  ],
+  "c": 0,
+  "e": "\"Exactamente k\" es P(X = k): un único término de la fórmula, sin sumar nada más."
+ },
+ {
+  "q": "Si un problema dice 'ninguno de ellos', ¿a qué corresponde?",
+  "o": [
+   "P(X=0)",
+   "P(X=n)",
+   "P(X ≥ 1)",
+   "1 − P(X=0)"
+  ],
+  "c": 0,
+  "e": "\"Ninguno\" significa 0 éxitos: P(X = 0) = qⁿ. 1 − P(X = 0) sería \"al menos uno\"."
+ },
+ {
+  "q": "Si un problema dice 'todos ellos', ¿a qué corresponde?",
+  "o": [
+   "P(X=n)",
+   "P(X=0)",
+   "P(X ≤ n)",
+   "1 − P(X=n)"
+  ],
+  "c": 0,
+  "e": "\"Todos\" significa n éxitos: P(X = n) = pⁿ. P(X ≤ n) vale siempre 1, así que no es lo que te piden."
+ },
+ {
+  "q": "Se modeliza con una binomial el número de personas que defraudan a Hacienda entre 5 elegidas al azar (cada una defrauda con probabilidad 0.08). ¿Qué papel juega la independencia en este modelo?",
+  "o": [
+   "Se supone que si una persona defrauda o no, no influye en si otra persona defrauda",
+   "No juega ningún papel",
+   "Solo importa si n es grande",
+   "La independencia nunca se cumple en fiscalidad"
+  ],
+  "c": 0,
+  "e": "La 2ª condición de Bernoulli exige independencia: suponemos que si una persona defrauda o no, eso no influye en lo que haga otra."
+ },
+ {
+  "q": "Se modeliza con B(5, 0.08) el número de personas que defraudan a Hacienda entre 5, usando el 8% de fraude general. ¿Es razonable asumir p constante si las 5 personas son de la misma empresa?",
+  "o": [
+   "No necesariamente, podría no ser razonable si hay factores comunes",
+   "Sí, siempre es razonable",
+   "Solo si la empresa es pequeña",
+   "Sí, porque el fraude es aleatorio"
+  ],
+  "c": 0,
+  "e": "Si las 5 personas trabajan en la misma empresa, puede haber factores comunes (mismo asesor, mismas prácticas), así que la probabilidad de fraude podría no ser independiente ni la misma del 8% general."
+ },
+ {
+  "q": "¿Qué información NO es necesaria para aplicar la fórmula binomial?",
+  "o": [
+   "El orden en que ocurren los éxitos y fracasos",
+   "El valor de n",
+   "El valor de p",
+   "El valor de k"
+  ],
+  "c": 0,
+  "e": "En P(X = k) = (n sobre k)·pᵏ·q⁽ⁿ⁻ᵏ⁾ solo necesitas n, p y k. El orden da igual: precisamente el número combinatorio cuenta todos los órdenes posibles."
+ },
+ {
+  "q": "En control de calidad, si se detectan muchos más defectos de los esperados por el modelo, ¿qué se puede sospechar?",
+  "o": [
+   "Que ha cambiado algo en el proceso de producción, o que la p estimada no es correcta",
+   "Que el modelo binomial nunca funciona",
+   "Que n era demasiado pequeño",
+   "Nada, es lo esperado siempre"
+  ],
+  "c": 0,
+  "e": "Si salen muchos más defectos de los que predice B(n, p), lo más razonable es sospechar que el proceso ha cambiado o que la p que usábamos no era la buena."
+ },
+ {
+  "q": "¿Qué utilidad tiene calcular la media μ=np en un problema aplicado?",
+  "o": [
+   "Da una estimación rápida de cuántos éxitos se esperan, sin calcular toda la distribución",
+   "Sirve para calcular n",
+   "Sirve para calcular p exactamente",
+   "No tiene ninguna utilidad práctica"
+  ],
+  "c": 0,
+  "e": "μ = np te dice al momento cuántos éxitos esperar de media, sin calcular todas las P(X = k). Por ejemplo, con n = 50 y p = 0.02, se esperan 50·0.02 = 1 defecto."
+ },
+ {
+  "q": "En un problema con n=5, ¿por qué conviene calcular P(X=0) y P(X=1) por separado antes de sumar 'al menos 2'?",
+  "o": [
+   "Porque el complementario de 'al menos 2' es 'como mucho 1', que es P(X=0)+P(X=1)",
+   "Porque siempre hay que calcular todos los términos",
+   "Porque P(X=0) y P(X=1) son siempre iguales",
+   "No conviene, es más lento"
+  ],
+  "c": 0,
+  "e": "\"Al menos 2\" es P(X ≥ 2) = 1 − [P(X = 0) + P(X = 1)]: con dos términos te basta, en vez de sumar P(X = 2) + … + P(X = 5)."
+ },
+ {
+  "q": "¿Qué error es habitual al identificar p en un problema de porcentajes?",
+  "o": [
+   "Confundir el porcentaje con su complementario (usar q en vez de p)",
+   "Multiplicar el porcentaje por 100",
+   "Olvidar que p debe ser positivo",
+   "Usar n en vez de p"
+  ],
+  "c": 0,
+  "e": "Un error típico es usar q en vez de p: si el enunciado da el % de un suceso pero pregunta por el contrario, hay que cambiar el éxito o usar q = 1 − p."
+ },
+ {
+  "q": "¿Por qué escribir X ~ B(n, p) al principio de un problema ayuda a resolverlo bien?",
+  "o": [
+   "Porque obliga a identificar con claridad los parámetros antes de aplicar la fórmula",
+   "Porque es un requisito formal sin utilidad real",
+   "Porque cambia el resultado final",
+   "Porque sustituye el cálculo de la media"
+  ],
+  "c": 0,
+  "e": "Escribir X ~ B(n, p) al principio te obliga a decidir qué es el éxito y cuánto valen n y p antes de empezar a calcular. Así evitas los errores más habituales."
+ },
+ {
+  "q": "¿Qué relación hay entre el modelo binomial y el diseño de auditorías (como en Hacienda)?",
+  "o": [
+   "Permite estimar cuántos casos de fraude se esperarían por azar, para comparar con lo observado",
+   "No tiene ninguna relación",
+   "Solo sirve para calcular impuestos",
+   "Solo se usa si n &gt; 1000"
+  ],
+  "c": 0,
+  "e": "El modelo binomial dice cuántos fraudes se esperarían si la tasa fuera la supuesta; si se observan muchos más, hay motivos para revisar esa estimación."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "El 12% de los productos de una fábrica tienen un defecto leve. De 10 productos, calcula P(ninguno defectuoso)",
+  "o": [
+   "≈0.2785",
+   "≈0.1200",
+   "≈0.8800",
+   "≈0.7215"
+  ],
+  "c": 0,
+  "e": "X ~ B(10, 0.12): P(X = 0) = 0.88¹⁰ ≈ 0.2785. 0.7215 sería \"al menos uno defectuoso\"."
+ },
+ {
+  "q": "El 12% de los productos de una fábrica tienen un defecto leve. De 10 productos, calcula el número esperado de productos defectuosos",
+  "o": [
+   "1.2",
+   "10",
+   "0.12",
+   "8.8"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 10·0.12 = 1.2 productos defectuosos esperados."
+ },
+ {
+  "q": "El 40% de los estudiantes de un instituto practica deporte. De 6 elegidos al azar, calcula P(exactamente 3 practican deporte)",
+  "o": [
+   "≈0.2765",
+   "≈0.4000",
+   "≈0.1176",
+   "≈0.6000"
+  ],
+  "c": 0,
+  "e": "X ~ B(6, 0.4): P(X = 3) = (6 sobre 3)·0.4³·0.6³ = 20·0.064·0.216 ≈ 0.2765."
+ },
+ {
+  "q": "El 40% de los estudiantes de un instituto practica deporte. De 6 elegidos al azar, calcula P(al menos 1 practica deporte)",
+  "o": [
+   "≈0.9533",
+   "≈0.0467",
+   "≈0.4000",
+   "≈0.6000"
+  ],
+  "c": 0,
+  "e": "P(X ≥ 1) = 1 − P(X = 0) = 1 − 0.6⁶ = 1 − 0.046656 ≈ 0.9533."
+ },
+ {
+  "q": "Un vendedor cierra una venta con probabilidad 0.3 en cada visita. En 5 visitas, calcula P(exactamente 2 ventas)",
+  "o": [
+   "≈0.3087",
+   "≈0.3000",
+   "≈0.1681",
+   "≈0.5000"
+  ],
+  "c": 0,
+  "e": "X ~ B(5, 0.3): P(X = 2) = (5 sobre 2)·0.3²·0.7³ = 10·0.09·0.343 = 0.3087."
+ },
+ {
+  "q": "Un vendedor cierra una venta con probabilidad 0.3 en cada visita. Calcula el número esperado de ventas cerradas en 5 visitas",
+  "o": [
+   "1.5",
+   "5",
+   "0.3",
+   "2.5"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 5·0.3 = 1.5 ventas esperadas."
+ },
+ {
+  "q": "El 90% de los aviones de una aerolínea despegan puntuales. De 8 vuelos, calcula P(todos puntuales)",
+  "o": [
+   "≈0.4305",
+   "≈0.9000",
+   "≈0.1000",
+   "≈0.5695"
+  ],
+  "c": 0,
+  "e": "X ~ B(8, 0.9) contando vuelos puntuales: P(X = 8) = 0.9⁸ ≈ 0.4305."
+ },
+ {
+  "q": "El 90% de los aviones de una aerolínea despegan puntuales. De 8 vuelos, calcula P(al menos uno se retrasa)",
+  "o": [
+   "≈0.5695",
+   "≈0.4305",
+   "≈0.1000",
+   "≈0.9000"
+  ],
+  "c": 0,
+  "e": "\"Al menos uno se retrasa\" es lo contrario de \"todos puntuales\": 1 − 0.9⁸ ≈ 1 − 0.4305 = 0.5695."
+ },
+ {
+  "q": "En una centralita, el 5% de las llamadas se pierden. De 12 llamadas, calcula P(se pierde como mucho 1)",
+  "o": [
+   "≈0.8817",
+   "≈0.5404",
+   "≈0.3413",
+   "≈0.1183"
+  ],
+  "c": 0,
+  "e": "X ~ B(12, 0.05): P(X ≤ 1) = 0.95¹² + 12·0.05·0.95¹¹ ≈ 0.5404 + 0.3413 = 0.8817."
+ },
+ {
+  "q": "El 70% de los pacientes de un tratamiento mejoran. De 4 pacientes, calcula P(exactamente 3 mejoran)",
+  "o": [
+   "≈0.4116",
+   "≈0.7000",
+   "≈0.2401",
+   "≈0.3000"
+  ],
+  "c": 0,
+  "e": "X ~ B(4, 0.7): P(X = 3) = (4 sobre 3)·0.7³·0.3 = 4·0.343·0.3 = 0.4116."
+ },
+ {
+  "q": "El 70% de los pacientes de un tratamiento mejoran. De 4 pacientes (n=4, p=0.7), calcula μ y σ del número de pacientes que mejoran",
+  "o": [
+   "μ=2.8, σ≈0.917",
+   "μ=4, σ≈0.7",
+   "μ=2.8, σ≈2.8",
+   "μ=0.7, σ≈0.458"
+  ],
+  "c": 0,
+  "e": "μ = 4·0.7 = 2.8 y σ = √(4·0.7·0.3) = √0.84 ≈ 0.917."
+ },
+ {
+  "q": "El 25% de los coches de un concesionario son blancos. De 5 vendidos, calcula P(ninguno blanco)",
+  "o": [
+   "≈0.2373",
+   "≈0.2500",
+   "≈0.7627",
+   "≈0.0010"
+  ],
+  "c": 0,
+  "e": "X ~ B(5, 0.25): P(X = 0) = 0.75⁵ ≈ 0.2373. 0.25⁵ ≈ 0.0010 sería que los 5 fueran blancos."
+ },
+ {
+  "q": "El 60% de los correos de una empresa se abren el primer día. De 10 correos, calcula el número esperado que se abren el primer día",
+  "o": [
+   "6",
+   "10",
+   "0.6",
+   "4"
+  ],
+  "c": 0,
+  "e": "X ~ B(10, 0.6): μ = 10·0.6 = 6 correos."
+ },
+ {
+  "q": "El 60% de los correos de una empresa se abren el primer día. De 10 correos, calcula la desviación típica del número de correos que se abren el primer día",
+  "o": [
+   "≈1.549",
+   "6",
+   "≈2.4",
+   "0.6"
+  ],
+  "c": 0,
+  "e": "σ = √(10·0.6·0.4) = √2.4 ≈ 1.549. 2.4 es la varianza."
+ },
+ {
+  "q": "El 8% de los billetes de una lotería tienen algún premio. De 6 billetes, calcula P(exactamente 1 premiado)",
+  "o": [
+   "≈0.3164",
+   "≈0.0800",
+   "≈0.4800",
+   "≈0.6064"
+  ],
+  "c": 0,
+  "e": "X ~ B(6, 0.08): P(X = 1) = 6·0.08·0.92⁵ = 0.48·0.6591 ≈ 0.3164. Si olvidas el 0.92⁵ te sale 0.48."
+ },
+ {
+  "q": "El 8% de los billetes de una lotería tienen algún premio. De 6 billetes, calcula P(ninguno premiado)",
+  "o": [
+   "≈0.6064",
+   "≈0.3164",
+   "≈0.0800",
+   "≈0.9200"
+  ],
+  "c": 0,
+  "e": "P(X = 0) = 0.92⁶ ≈ 0.6064. 0.92 es la probabilidad para un solo billete, no para los 6."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

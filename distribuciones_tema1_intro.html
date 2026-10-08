@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tema 1 — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1a2e4a;
+    --navy-light:#2a4468;
+    --teal:#1d7a6b;
+    --teal-light:#e4f2ef;
+    --orange:#e07b3a;
+    --orange-light:#fdeee0;
+    --cream:#f5f2eb;
+    --ink:#2b2b2b;
+    --muted:#6b6f76;
+    --white:#ffffff;
+    --line:#e4e0d6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Nunito Sans',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{
+    background:var(--navy);
+    color:var(--white);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header.top .brand{font-weight:800;font-size:1.05rem;letter-spacing:.2px}
+  header.top .brand span{color:var(--orange)}
+  header.top .tag{font-size:.8rem;color:#c7d0dd;font-weight:600}
+
+  .hero{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 20px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    display:inline-block;
+    background:var(--orange-light);
+    color:var(--orange);
+    font-weight:800;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:6px 14px;
+    border-radius:100px;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:2.6rem;
+    font-weight:900;
+    color:var(--navy);
+    margin:0 0 14px;
+    letter-spacing:-.02em;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--teal);
+  }
+  .hero p.sub{
+    font-size:1.08rem;
+    color:var(--muted);
+    max-width:680px;
+    margin:0 auto;
+  }
+
+  .motivante{
+    max-width:820px;
+    margin:36px auto 0;
+    padding:0 24px;
+  }
+  .card-ib{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-left:6px solid var(--teal);
+    border-radius:14px;
+    padding:26px 28px;
+    box-shadow:0 2px 10px rgba(26,46,74,.05);
+  }
+  .card-ib h3{
+    margin:0 0 10px;
+    color:var(--teal);
+    font-size:1.02rem;
+    font-weight:800;
+  }
+  .card-ib p{margin:0 0 12px;color:var(--ink)}
+  .card-ib p:last-child{margin-bottom:0}
+  .card-ib .indagacion{
+    background:var(--teal-light);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-top:14px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .conceptos{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:16px;
+  }
+  .conceptos span{
+    background:var(--navy);
+    color:#fff;
+    font-size:.78rem;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:100px;
+  }
+
+  section.bloques{
+    max-width:1040px;
+    margin:52px auto;
+    padding:0 24px;
+  }
+  section.bloques h2{
+    text-align:center;
+    color:var(--navy);
+    font-size:1.5rem;
+    margin-bottom:6px;
+  }
+  section.bloques p.lead{
+    text-align:center;
+    color:var(--muted);
+    margin:0 auto 34px;
+    max-width:560px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:20px;
+  }
+  .bloque-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .bloque-card.activo:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(26,46,74,.1);
+  }
+  .bloque-card .visual{
+    height:96px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-light));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:1.3rem;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .bloque-card.pendiente .visual{
+    background:linear-gradient(135deg,#cfc9ba,#e4e0d3);
+    color:#9b968a;
+  }
+  .bloque-card .body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column}
+  .bloque-card .num{
+    color:var(--orange);
+    font-weight:800;
+    font-size:.78rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  .bloque-card h3{margin:0 0 8px;color:var(--navy);font-size:1.15rem}
+  .bloque-card p{color:var(--muted);font-size:.92rem;margin:0 0 16px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .tags span{
+    background:var(--teal-light);
+    color:var(--teal);
+    font-size:.72rem;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:100px;
+  }
+  .btn{
+    display:inline-block;
+    text-align:center;
+    padding:11px 18px;
+    border-radius:10px;
+    font-weight:800;
+    font-size:.92rem;
+  }
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.off{background:#ece9df;color:#a6a196;cursor:default}
+
+  footer{
+    text-align:center;
+    padding:36px 24px 44px;
+    color:var(--muted);
+    font-size:.85rem;
+    border-top:1px solid var(--line);
+    margin-top:20px;
+  }
+  .esquema{
+    max-width:1100px;
+    margin:44px auto 0;
+    padding:0 24px;
+  }
+  .esquema .card-esquema{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+  }
+  .esquema h3{
+    color:var(--navy);
+    font-size:1.15rem;
+    margin:0 0 6px;
+  }
+  .esquema p.nota{
+    color:var(--muted);
+    font-size:.9rem;
+    margin:0 0 18px;
+  }
+  .esquema img{
+    max-width:100%;
+    height:auto;
+    border-radius:10px;
+    border:1px solid var(--line);
+    cursor:zoom-in;
+  }
+</style>
+<body>
+
+<header class="top" style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap;padding:14px 24px">
+  <a href="index.html" style="color:#cfd8e6">Portal de Distribuciones</a>
+  <span style="color:#5c6b82">·</span>
+  <span style="color:#fff;font-weight:800">Tema 1</span>
+</header>
+
+<div class="hero">
+  <span class="eyebrow">Tema 1</span>
+  <h1>Variable <em>aleatoria</em></h1>
+  <p class="sub">¿Cuánto puedes esperar ganar si juegas 100 veces a un juego de azar? Este tema convierte los resultados de un experimento aleatorio en números con los que se puede calcular: medias, dispersión y probabilidad acumulada.</p>
+</div>
+
+<div class="motivante">
+  <div class="card-ib">
+    <h3>🌍 Problema motivante</h3>
+    <p>Un médico te dice que un test ha dado positivo para una enfermedad rara. ¿Deberías alarmarte? Para responder con rigor necesitas convertir "resultados posibles" en números — eso es exactamente una variable aleatoria.</p>
+    <p><strong>¿Cómo pasamos de "esto puede pasar o no" a "esto vale, de media, tal número"?</strong></p>
+    <div class="indagacion">
+      🔍 Pregunta de indagación · Si un resultado individual es impredecible, ¿qué es exactamente lo que sí podemos predecir con precisión sobre muchas repeticiones?
+    </div>
+    <div class="conceptos">
+      <span>Representación</span><span>Cantidad</span><span>Modelos</span>
+    </div>
+  </div>
+</div>
+
+<section class="bloques">
+  <h2>📚 Bloques del tema</h2>
+  <p class="lead">Cada bloque combina teoría, ejemplos resueltos e investigación guiada. Empieza siempre por el Bloque 1 — todos los bloques usan el mismo ejemplo de las 3 monedas para que veas cómo se conecta todo.</p>
+
+  <div class="grid">
+
+    <div class="bloque-card activo">
+      <div class="visual">X : E → ℝ</div>
+      <div class="body">
+        <div class="num">Bloque 1</div>
+        <h3>Variable aleatoria</h3>
+        <p>De sucesos a números: qué es una variable aleatoria y sus tipos (discreta/continua).</p>
+        <div class="tags"><span>Definición</span><span>Discreta/Continua</span></div>
+        <a class="btn on" href="distribuciones_b1_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">ΣP(X=xᵢ)=1</div>
+      <div class="body">
+        <div class="num">Bloque 2</div>
+        <h3>Distribución de probabilidad</h3>
+        <p>Tabular los valores de X junto a su probabilidad, y la propiedad que siempre se cumple.</p>
+        <div class="tags"><span>Tabla Xi/Pi</span><span>Propiedad</span></div>
+        <a class="btn on" href="distribuciones_b2_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">E(X)=Σxᵢpᵢ</div>
+      <div class="body">
+        <div class="num">Bloque 3</div>
+        <h3>Esperanza matemática</h3>
+        <p>El valor medio a largo plazo — con la historia de Huygens y el nacimiento del "valor esperado".</p>
+        <div class="tags"><span>Media</span><span>Huygens</span></div>
+        <a class="btn on" href="distribuciones_b3_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">σ² , σ</div>
+      <div class="body">
+        <div class="num">Bloque 4</div>
+        <h3>Parámetros</h3>
+        <p>Varianza y desviación típica: cuánto se dispersan los valores respecto a la media.</p>
+        <div class="tags"><span>Varianza</span><span>Desv. típica</span></div>
+        <a class="btn on" href="distribuciones_b4_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">F(x)=P(X≤x)</div>
+      <div class="body">
+        <div class="num">Bloque 5</div>
+        <h3>Función de distribución</h3>
+        <p>Probabilidad acumulada y su gráfica escalonada — cierra el ejemplo de las 3 monedas.</p>
+        <div class="tags"><span>Acumulada</span><span>Gráfica</span></div>
+        <a class="btn on" href="distribuciones_b5_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  Las Chapas ECOS · Departamento de Matemáticas · 2º Bachillerato
+</footer>
+
+</body>
+</html>

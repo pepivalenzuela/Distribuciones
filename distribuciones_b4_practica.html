@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.4 Práctica — Variable aleatoria · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema1_intro.html">Tema 1</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_b4_intro.html">Bloque 4</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 4 · Práctica libre</span>
+    <h1>Parámetros</h1>
+    <p>Ejercicios aleatorios de teoría (varianza, desviación típica) y de aplicación (cálculo de σ² y σ a partir de una distribución). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_b4_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_b5_intro.html">Bloque 5 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué mide la varianza de una variable aleatoria?",
+  "o": [
+   "La dispersión de los valores respecto a la media",
+   "El valor medio de la variable",
+   "La probabilidad máxima",
+   "El número de valores distintos que toma X"
+  ],
+  "c": 0,
+  "e": "La varianza mide cuánto se alejan los valores de X de la media μ, es decir, su dispersión. El centro lo da la media, no la varianza."
+ },
+ {
+  "q": "¿Cuál es la fórmula de la varianza?",
+  "o": [
+   "σ² = Σxᵢ²·P(X=xᵢ) − μ²",
+   "σ² = Σxᵢ·P(X=xᵢ)",
+   "σ² = μ²",
+   "σ² = Σxᵢ² − μ"
+  ],
+  "c": 0,
+  "e": "σ² = Σ xᵢ²·P(X = xᵢ) − μ²: la media de los cuadrados menos el cuadrado de la media. Σ xᵢ·P(X = xᵢ) es la media μ, no la varianza."
+ },
+ {
+  "q": "¿Cómo se calcula la desviación típica a partir de la varianza?",
+  "o": [
+   "σ = √σ² (raíz cuadrada de la varianza)",
+   "σ = σ²/2",
+   "σ = σ² al cuadrado",
+   "σ = 1/σ²"
+  ],
+  "c": 0,
+  "e": "La desviación típica es la raíz cuadrada (positiva) de la varianza: σ = √σ²."
+ },
+ {
+  "q": "¿En qué unidades se mide la varianza respecto a X?",
+  "o": [
+   "En las unidades de X al cuadrado",
+   "En las mismas unidades que X",
+   "Es siempre adimensional",
+   "En porcentaje"
+  ],
+  "c": 0,
+  "e": "Como en la fórmula aparecen los xᵢ al cuadrado, la varianza se mide en unidades de X al cuadrado (por ejemplo, €²)."
+ },
+ {
+  "q": "¿En qué unidades se mide la desviación típica respecto a X?",
+  "o": [
+   "En las mismas unidades que X",
+   "En las unidades de X al cuadrado",
+   "Es siempre adimensional",
+   "En porcentaje"
+  ],
+  "c": 0,
+  "e": "σ = √σ², así que la raíz \"deshace\" el cuadrado y σ se mide en las mismas unidades que X."
+ },
+ {
+  "q": "¿Puede la varianza ser negativa?",
+  "o": [
+   "No, nunca; siempre es ≥0",
+   "Sí, si μ es negativa",
+   "Sí, si X toma valores negativos",
+   "Solo si X es continua"
+  ],
+  "c": 0,
+  "e": "La varianza es una media de distancias al cuadrado (xᵢ − μ)², que nunca son negativas, así que σ² ≥ 0 siempre, aunque X o μ sean negativos."
+ },
+ {
+  "q": "¿Qué significa que σ=0?",
+  "o": [
+   "Que la variable no tiene dispersión: siempre toma el mismo valor",
+   "Que la variable toma solo valores negativos",
+   "Que la media también es 0",
+   "Que la variable no es aleatoria por definición y no se puede calcular σ"
+  ],
+  "c": 0,
+  "e": "Si σ = 0 no hay dispersión: todos los valores con probabilidad positiva coinciden con la media, es decir, X toma siempre el mismo valor. La media puede ser cualquier número."
+ },
+ {
+  "q": "Si dos variables tienen la misma media pero distinta varianza, ¿qué se puede decir de ellas?",
+  "o": [
+   "Tienen el mismo centro pero distinta dispersión",
+   "Son la misma variable",
+   "Una de las dos no es válida",
+   "Tienen distinta esperanza matemática en realidad"
+  ],
+  "c": 0,
+  "e": "La misma media indica el mismo centro; distinta varianza indica que una está más dispersa que la otra."
+ },
+ {
+  "q": "¿Por qué se usa la desviación típica en vez de la varianza para comparar dispersión con la media?",
+  "o": [
+   "Porque está en las mismas unidades que la variable, lo que la hace más interpretable",
+   "Porque siempre da un valor más pequeño",
+   "Porque la varianza no se puede calcular en la práctica",
+   "No hay ninguna razón, son intercambiables"
+  ],
+  "c": 0,
+  "e": "σ está en las mismas unidades que X (y que la media), así que se puede comparar e interpretar directamente; la varianza está en unidades al cuadrado."
+ },
+ {
+  "q": "¿Qué relación hay entre σ² y σ?",
+  "o": [
+   "σ es la raíz cuadrada positiva de σ²",
+   "σ² es la raíz cuadrada de σ",
+   "Son magnitudes independientes",
+   "σ = σ² siempre"
+  ],
+  "c": 0,
+  "e": "σ es la raíz cuadrada positiva de σ²; equivalentemente, σ² = σ·σ."
+ },
+ {
+  "q": "Si Var(X)=4, ¿cuánto vale la desviación típica?",
+  "o": [
+   "2",
+   "16",
+   "4",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "σ = √Var(X) = √4 = 2. El error típico es elevar al cuadrado (16) en vez de hacer la raíz."
+ },
+ {
+  "q": "¿Qué le ocurre a la varianza si sumamos una constante a todos los valores de X?",
+  "o": [
+   "No cambia: Var(X+a)=Var(X)",
+   "Se suma esa constante",
+   "Se multiplica por esa constante",
+   "Se eleva al cuadrado"
+  ],
+  "c": 0,
+  "e": "Sumar una constante desplaza todos los valores y la media lo mismo, así que las distancias a la media no cambian: Var(X + a) = Var(X)."
+ },
+ {
+  "q": "¿Qué le ocurre a la varianza si multiplicamos todos los valores de X por una constante c?",
+  "o": [
+   "Se multiplica por c²: Var(cX)=c²·Var(X)",
+   "Se multiplica por c",
+   "No cambia",
+   "Se divide por c"
+  ],
+  "c": 0,
+  "e": "Si multiplicas X por c, las distancias a la media se multiplican por c y sus cuadrados por c²: Var(cX) = c²·Var(X)."
+ },
+ {
+  "q": "Si conoces la desviación típica σ de una variable, ¿puedes obtener su varianza?",
+  "o": [
+   "Sí, elevando σ al cuadrado: σ² = σ·σ",
+   "No, son fórmulas independientes sin relación",
+   "No, σ no se puede elevar al cuadrado",
+   "Solo si μ = 0"
+  ],
+  "c": 0,
+  "e": "Como σ = √σ², elevando σ al cuadrado recuperas la varianza: σ² = σ·σ. Por ejemplo, si σ = 3, σ² = 9."
+ },
+ {
+  "q": "¿Qué pasa con la fórmula σ²=Σxᵢ²pᵢ−μ² si μ=0?",
+  "o": [
+   "Se simplifica a σ²=Σxᵢ²pᵢ",
+   "Se simplifica a σ²=0",
+   "La fórmula deja de ser válida",
+   "σ² pasa a ser negativa"
+  ],
+  "c": 0,
+  "e": "Si μ = 0, entonces μ² = 0 y la fórmula queda σ² = Σ xᵢ²·pᵢ. Sigue siendo válida y no tiene por qué dar 0."
+ },
+ {
+  "q": "Dos dados, uno normal y otro trucado para sacar casi siempre un 3 o un 4. ¿Cuál de los dos tiene mayor desviación típica?",
+  "o": [
+   "El dado normal, porque sus resultados están más repartidos",
+   "El dado trucado, porque tiene menos valores posibles",
+   "Ambos tienen la misma desviación típica",
+   "No se puede saber sin más datos"
+  ],
+  "c": 0,
+  "e": "En el dado normal los resultados del 1 al 6 están igual de repartidos, mientras que el trucado se concentra en 3 y 4, cerca de su media. Más dispersión implica mayor σ: la del dado normal es σ ≈ 1.71."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "X tiene P(X=0)=0.5, P(X=1)=0.3, P(X=2)=0.2, con E(X)=0.7. Calcula Var(X).",
+  "o": [
+   "0.61",
+   "0.49",
+   "1.1",
+   "0.7"
+  ],
+  "c": 0,
+  "e": "E(X²) = 0²·0.5 + 1²·0.3 + 2²·0.2 = 0.3 + 0.8 = 1.1, así que Var(X) = 1.1 − 0.7² = 1.1 − 0.49 = 0.61."
+ },
+ {
+  "q": "X tiene P(X=0)=0.5, P(X=1)=0.3, P(X=2)=0.2, con E(X)=0.7 y Var(X)=0.61. Calcula la desviación típica.",
+  "o": [
+   "≈0.781",
+   "0.61",
+   "≈0.7",
+   "0.49"
+  ],
+  "c": 0,
+  "e": "σ = √0.61 ≈ 0.781."
+ },
+ {
+  "q": "X tiene P(X=1)=0.2, P(X=2)=0.5, P(X=3)=0.3, con E(X)=2.1. Calcula Var(X).",
+  "o": [
+   "0.49",
+   "4.9",
+   "4.41",
+   "0.21"
+  ],
+  "c": 0,
+  "e": "E(X²) = 1·0.2 + 4·0.5 + 9·0.3 = 0.2 + 2 + 2.7 = 4.9, así que Var(X) = 4.9 − 2.1² = 4.9 − 4.41 = 0.49. El error típico es dar 4.9 sin restar μ²."
+ },
+ {
+  "q": "X tiene P(X=1)=0.2, P(X=2)=0.5, P(X=3)=0.3, con E(X)=2.1 y Var(X)=0.49. Calcula σ.",
+  "o": [
+   "0.7",
+   "0.49",
+   "2.1",
+   "1.4"
+  ],
+  "c": 0,
+  "e": "σ = √0.49 = 0.7."
+ },
+ {
+  "q": "X toma valores 1,2,3,4,5,6 equiprobables (dado), con E(X)=3.5. Calcula Var(X) (aprox.).",
+  "o": [
+   "≈2.92",
+   "≈15.17",
+   "3.5",
+   "≈1.71"
+  ],
+  "c": 0,
+  "e": "E(X²) = (1 + 4 + 9 + 16 + 25 + 36)/6 = 91/6 ≈ 15.17, así que Var(X) = 91/6 − 3.5² = 15.17 − 12.25 ≈ 2.92. 15.17 es E(X²), sin restar μ²."
+ },
+ {
+  "q": "Al lanzar un dado equilibrado, X = \"resultado obtenido\" tiene E(X)=3.5 y Var(X)≈2.92. Calcula σ.",
+  "o": [
+   "≈1.71",
+   "≈2.92",
+   "≈8.54",
+   "3.5"
+  ],
+  "c": 0,
+  "e": "σ = √2.92 ≈ 1.71."
+ },
+ {
+  "q": "X tiene P(X=-1)=0.25, P(X=0)=0.5, P(X=1)=0.25, con E(X)=0. Calcula Var(X).",
+  "o": [
+   "0.5",
+   "0",
+   "0.25",
+   "1"
+  ],
+  "c": 0,
+  "e": "E(X²) = (−1)²·0.25 + 0·0.5 + 1²·0.25 = 0.5, y como μ = 0, Var(X) = 0.5 − 0 = 0.5."
+ },
+ {
+  "q": "X tiene P(X=-1)=0.25, P(X=0)=0.5, P(X=1)=0.25, con E(X)=0 y Var(X)=0.5. Calcula σ.",
+  "o": [
+   "≈0.707",
+   "0.5",
+   "0.25",
+   "1"
+  ],
+  "c": 0,
+  "e": "σ = √0.5 ≈ 0.707."
+ },
+ {
+  "q": "X tiene P(X=10)=0.4, P(X=20)=0.6, con E(X)=16. Calcula Var(X).",
+  "o": [
+   "24",
+   "256",
+   "280",
+   "16"
+  ],
+  "c": 0,
+  "e": "E(X²) = 100·0.4 + 400·0.6 = 40 + 240 = 280, así que Var(X) = 280 − 16² = 280 − 256 = 24."
+ },
+ {
+  "q": "X tiene P(X=10)=0.4, P(X=20)=0.6, con E(X)=16 y Var(X)=24. Calcula σ.",
+  "o": [
+   "≈4.9",
+   "24",
+   "≈15.2",
+   "16"
+  ],
+  "c": 0,
+  "e": "σ = √24 ≈ 4.9."
+ },
+ {
+  "q": "En un juego, X (ganancia) tiene P(X=-1)=0.6, P(X=2)=0.3, P(X=5)=0.1, con E(X)=0.5. Calcula Var(X).",
+  "o": [
+   "4.05",
+   "4.3",
+   "0.25",
+   "3.8"
+  ],
+  "c": 0,
+  "e": "E(X²) = 1·0.6 + 4·0.3 + 25·0.1 = 0.6 + 1.2 + 2.5 = 4.3, así que Var(X) = 4.3 − 0.5² = 4.3 − 0.25 = 4.05."
+ },
+ {
+  "q": "En un juego, X (ganancia) tiene P(X=-1)=0.6, P(X=2)=0.3, P(X=5)=0.1, con E(X)=0.5 y Var(X)=4.05. Calcula σ.",
+  "o": [
+   "≈2.01",
+   "4.05",
+   "≈0.5",
+   "≈2.07"
+  ],
+  "c": 0,
+  "e": "σ = √4.05 ≈ 2.01. Si sale 2.07 es que has hecho √4.3, olvidando restar μ²."
+ },
+ {
+  "q": "X tiene P(X=0)=0.1, P(X=1)=0.2, P(X=2)=0.4, P(X=3)=0.3. Calcula E(X).",
+  "o": [
+   "1.9",
+   "1.5",
+   "2",
+   "1.8"
+  ],
+  "c": 0,
+  "e": "E(X) = 0·0.1 + 1·0.2 + 2·0.4 + 3·0.3 = 0 + 0.2 + 0.8 + 0.9 = 1.9."
+ },
+ {
+  "q": "X tiene P(X=0)=0.1, P(X=1)=0.2, P(X=2)=0.4, P(X=3)=0.3, con E(X)=1.9. Calcula Var(X).",
+  "o": [
+   "0.89",
+   "4.5",
+   "3.61",
+   "1.9"
+  ],
+  "c": 0,
+  "e": "E(X²) = 0·0.1 + 1·0.2 + 4·0.4 + 9·0.3 = 0.2 + 1.6 + 2.7 = 4.5, así que Var(X) = 4.5 − 1.9² = 4.5 − 3.61 = 0.89."
+ },
+ {
+  "q": "Si Var(X)=2.25, calcula la desviación típica.",
+  "o": [
+   "1.5",
+   "4.5",
+   "1.125",
+   "2.25"
+  ],
+  "c": 0,
+  "e": "σ = √2.25 = 1.5. El error típico es dividir entre 2 (1.125) en vez de hacer la raíz."
+ },
+ {
+  "q": "Si σ=3, calcula la varianza.",
+  "o": [
+   "9",
+   "6",
+   "1.5",
+   "3"
+  ],
+  "c": 0,
+  "e": "σ² = 3² = 9."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3.2 Práctica — Distribución normal · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema4_intro.html">Tema 3</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t4_b2_intro.html">Bloque 2</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 2 · Práctica libre</span>
+    <h1>La distribución normal N(μ,σ)</h1>
+    <p>Ejercicios aleatorios de teoría (campana de Gauss, parámetros) y de aplicación (regla empírica 68-95-99.7). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t4_b2_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t4_b3_intro.html">Bloque 3 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Qué forma tiene la gráfica de una distribución normal?",
+  "o": [
+   "Una campana simétrica",
+   "Un rectángulo",
+   "Una recta",
+   "Una escalera"
+  ],
+  "c": 0,
+  "e": "La gráfica de la densidad normal es la campana de Gauss: simétrica, con el máximo en la media y colas que se acercan al eje sin tocarlo."
+ },
+ {
+  "q": "¿Respecto a qué valor es simétrica la campana de Gauss?",
+  "o": [
+   "Respecto a la media μ",
+   "Respecto a la desviación típica σ",
+   "Respecto al valor 0 siempre",
+   "Respecto a la mediana, distinta de la media"
+  ],
+  "c": 0,
+  "e": "La campana es simétrica respecto a la recta x = μ. Solo es simétrica respecto a 0 cuando μ = 0, como en la N(0, 1)."
+ },
+ {
+  "q": "¿Qué representa σ en X ~ N(μ, σ)?",
+  "o": [
+   "La desviación típica, que mide la anchura de la campana",
+   "El valor máximo de X",
+   "La mediana de X",
+   "El número de datos"
+  ],
+  "c": 0,
+  "e": "En X ~ N(μ, σ), σ es la desviación típica (no la varianza): mide la dispersión, es decir, lo ancha que es la campana."
+ },
+ {
+  "q": "Si σ es grande, ¿cómo es la campana?",
+  "o": [
+   "Más ancha y achatada",
+   "Más estrecha y puntiaguda",
+   "Igual, σ no afecta a la forma",
+   "Asimétrica"
+  ],
+  "c": 0,
+  "e": "Con σ grande los datos están más dispersos: la campana se ensancha y, como su área sigue valiendo 1, se hace más baja."
+ },
+ {
+  "q": "Si σ es pequeña, ¿cómo es la campana?",
+  "o": [
+   "Más estrecha y puntiaguda",
+   "Más ancha y achatada",
+   "Igual, σ no afecta a la forma",
+   "Asimétrica"
+  ],
+  "c": 0,
+  "e": "Con σ pequeña los datos se agrupan cerca de la media: la campana se estrecha y, para conservar área 1, se hace más alta."
+ },
+ {
+  "q": "¿Qué porcentaje de valores está aproximadamente entre μ-σ y μ+σ?",
+  "o": [
+   "68%",
+   "95%",
+   "99.7%",
+   "50%"
+  ],
+  "c": 0,
+  "e": "Regla empírica: en el intervalo μ ± σ está aproximadamente el 68% de los valores de cualquier normal."
+ },
+ {
+  "q": "¿Qué porcentaje de valores está aproximadamente entre μ-2σ y μ+2σ?",
+  "o": [
+   "95%",
+   "68%",
+   "99.7%",
+   "90%"
+  ],
+  "c": 0,
+  "e": "Regla empírica: en μ ± 2σ está aproximadamente el 95% de los valores (con la tabla, 0.9544)."
+ },
+ {
+  "q": "¿Qué porcentaje de valores está aproximadamente entre μ-3σ y μ+3σ?",
+  "o": [
+   "99.7%",
+   "95%",
+   "68%",
+   "100%"
+  ],
+  "c": 0,
+  "e": "Regla empírica: en μ ± 3σ está aproximadamente el 99.7% de los valores. No es el 100%, porque la normal puede tomar cualquier valor real."
+ },
+ {
+  "q": "¿Cómo se llama la regla que dice que en una normal hay aproximadamente un 68%, un 95% y un 99.7% de los valores en μ ± σ, μ ± 2σ y μ ± 3σ?",
+  "o": [
+   "La regla empírica 68-95-99.7",
+   "La regla de Laplace",
+   "El teorema de Bayes",
+   "La desigualdad de Chebyshev"
+  ],
+  "c": 0,
+  "e": "Es la regla empírica 68-95-99.7: 68%, 95% y 99.7% de los valores en μ ± σ, μ ± 2σ y μ ± 3σ."
+ },
+ {
+  "q": "Si X ~ N(50, 10), ¿entre qué valores se encuentra aproximadamente el 68% de los datos?",
+  "o": [
+   "Entre 40 y 60",
+   "Entre 30 y 70",
+   "Entre 20 y 80",
+   "Entre 45 y 55"
+  ],
+  "c": 0,
+  "e": "El 68% está en μ ± σ = 50 ± 10, es decir, entre 40 y 60."
+ },
+ {
+  "q": "Si X ~ N(50, 10), ¿entre qué valores se encuentra aproximadamente el 95% de los datos?",
+  "o": [
+   "Entre 30 y 70",
+   "Entre 40 y 60",
+   "Entre 20 y 80",
+   "Entre 35 y 65"
+  ],
+  "c": 0,
+  "e": "El 95% está en μ ± 2σ = 50 ± 2·10 = 50 ± 20, es decir, entre 30 y 70."
+ },
+ {
+  "q": "¿Puede una variable normal tomar valores negativos?",
+  "o": [
+   "Sí, en teoría puede tomar cualquier valor real, aunque sea poco probable lejos de la media",
+   "No, nunca",
+   "Solo si μ es negativa",
+   "Solo si σ &gt; 10"
+  ],
+  "c": 0,
+  "e": "Sí: la normal está definida en toda la recta real, así que en teoría puede tomar valores negativos, aunque si μ es grande frente a σ esa probabilidad es despreciable."
+ },
+ {
+  "q": "¿Qué punto de la campana tiene mayor altura (mayor densidad)?",
+  "o": [
+   "El punto x=μ",
+   "El punto x=0 siempre",
+   "El punto x=σ",
+   "No hay un punto más alto"
+  ],
+  "c": 0,
+  "e": "La campana alcanza su máximo en el centro, x = μ. Solo coincide con x = 0 cuando la media es 0."
+ },
+ {
+  "q": "¿Es correcto decir que la mediana de una normal coincide con la media?",
+  "o": [
+   "Sí, por la simetría de la campana",
+   "No, nunca coinciden",
+   "Solo si σ=1",
+   "Solo si μ=0"
+  ],
+  "c": 0,
+  "e": "Sí: al ser la campana simétrica respecto a μ, deja el 50% del área a cada lado de μ, así que la mediana es μ. En la normal coinciden media, mediana y moda."
+ },
+ {
+  "q": "¿Qué le pasa a la campana si aumentamos μ manteniendo σ fijo?",
+  "o": [
+   "Se desplaza hacia la derecha, sin cambiar de forma",
+   "Se vuelve más ancha",
+   "Se vuelve más estrecha",
+   "No cambia nada"
+  ],
+  "c": 0,
+  "e": "μ indica dónde está el centro: si aumenta, la campana se traslada a la derecha sin cambiar de forma, porque la anchura depende solo de σ."
+ },
+ {
+  "q": "¿Qué le pasa a la campana si aumentamos σ manteniendo μ fijo?",
+  "o": [
+   "Se vuelve más ancha y más baja",
+   "Se desplaza hacia la derecha",
+   "Se vuelve más estrecha",
+   "No cambia nada"
+  ],
+  "c": 0,
+  "e": "σ controla la dispersión: si aumenta, la campana se ensancha y, como el área sigue siendo 1, baja de altura. El centro μ no se mueve."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "X ~ N(100, 15). ¿Entre qué valores está aproximadamente el 68% de los datos?",
+  "o": [
+   "Entre 85 y 115",
+   "Entre 70 y 130",
+   "Entre 55 y 145",
+   "Entre 90 y 110"
+  ],
+  "c": 0,
+  "e": "El 68% está en μ ± σ = 100 ± 15: entre 85 y 115."
+ },
+ {
+  "q": "X ~ N(100, 15). Calcula el intervalo del 95%.",
+  "o": [
+   "Entre 70 y 130",
+   "Entre 85 y 115",
+   "Entre 55 y 145",
+   "Entre 80 y 120"
+  ],
+  "c": 0,
+  "e": "El 95% está en μ ± 2σ = 100 ± 30: entre 70 y 130."
+ },
+ {
+  "q": "X ~ N(100, 15). Calcula el intervalo del 99.7%.",
+  "o": [
+   "Entre 55 y 145",
+   "Entre 70 y 130",
+   "Entre 85 y 115",
+   "Entre 40 y 160"
+  ],
+  "c": 0,
+  "e": "El 99.7% está en μ ± 3σ = 100 ± 45: entre 55 y 145."
+ },
+ {
+  "q": "X ~ N(50, 5). ¿Cuál es el valor de μ+2σ?",
+  "o": [
+   "60",
+   "55",
+   "65",
+   "50"
+  ],
+  "c": 0,
+  "e": "μ + 2σ = 50 + 2·5 = 60."
+ },
+ {
+  "q": "X ~ N(50, 5). ¿Cuál es el valor de μ-3σ?",
+  "o": [
+   "35",
+   "40",
+   "45",
+   "30"
+  ],
+  "c": 0,
+  "e": "μ − 3σ = 50 − 3·5 = 35."
+ },
+ {
+  "q": "La estatura de un grupo sigue N(170, 7). ¿Entre qué valores está el 68% de las estaturas?",
+  "o": [
+   "Entre 163 y 177",
+   "Entre 156 y 184",
+   "Entre 149 y 191",
+   "Entre 166 y 174"
+  ],
+  "c": 0,
+  "e": "El 68% está en μ ± σ = 170 ± 7: entre 163 y 177 cm."
+ },
+ {
+  "q": "La estatura de un grupo sigue N(170, 7). ¿Qué porcentaje aproximado mide entre 156 y 184 cm?",
+  "o": [
+   "95%",
+   "68%",
+   "99.7%",
+   "90%"
+  ],
+  "c": 0,
+  "e": "156 y 184 son 170 ± 14 = μ ± 2σ, así que ahí está aproximadamente el 95% de las estaturas."
+ },
+ {
+  "q": "El peso de un producto sigue N(500, 10) gramos. ¿Entre qué valores está el 99.7% de los pesos?",
+  "o": [
+   "Entre 470 y 530",
+   "Entre 480 y 520",
+   "Entre 490 y 510",
+   "Entre 460 y 540"
+  ],
+  "c": 0,
+  "e": "El 99.7% está en μ ± 3σ = 500 ± 30: entre 470 y 530 g."
+ },
+ {
+  "q": "X ~ N(20, 4). Calcula μ-σ y μ+σ.",
+  "o": [
+   "16 y 24",
+   "12 y 28",
+   "18 y 22",
+   "20 y 24"
+  ],
+  "c": 0,
+  "e": "μ − σ = 20 − 4 = 16 y μ + σ = 20 + 4 = 24."
+ },
+ {
+  "q": "Un test de inteligencia tiene puntuaciones N(100, 15). ¿Qué porcentaje aproximado puntúa entre 70 y 130?",
+  "o": [
+   "95%",
+   "68%",
+   "99.7%",
+   "50%"
+  ],
+  "c": 0,
+  "e": "70 y 130 son 100 ± 30 = μ ± 2σ, así que puntúa ahí aproximadamente el 95%."
+ },
+ {
+  "q": "X ~ N(0, 1). ¿Cuál es el valor de μ?",
+  "o": [
+   "0",
+   "1",
+   "0.5",
+   "-1"
+  ],
+  "c": 0,
+  "e": "En X ~ N(μ, σ) el primer parámetro es la media: en N(0, 1), μ = 0."
+ },
+ {
+  "q": "X ~ N(0, 1). ¿Cuál es el valor de σ?",
+  "o": [
+   "1",
+   "0",
+   "0.5",
+   "2"
+  ],
+  "c": 0,
+  "e": "El segundo parámetro es la desviación típica: en N(0, 1), σ = 1."
+ },
+ {
+  "q": "Si μ=200 y σ=25, calcula el intervalo del 68%.",
+  "o": [
+   "Entre 175 y 225",
+   "Entre 150 y 250",
+   "Entre 125 y 275",
+   "Entre 190 y 210"
+  ],
+  "c": 0,
+  "e": "El 68% está en μ ± σ = 200 ± 25: entre 175 y 225."
+ },
+ {
+  "q": "Si el 95% de los datos de una normal está entre 40 y 80, ¿cuánto vale μ?",
+  "o": [
+   "60",
+   "40",
+   "80",
+   "20"
+  ],
+  "c": 0,
+  "e": "El intervalo del 95% está centrado en la media, así que μ es el punto medio: (40 + 80)/2 = 60."
+ },
+ {
+  "q": "Si el 95% de los datos de una normal está entre 40 y 80, ¿cuánto vale aproximadamente σ (usando que el intervalo del 95% es μ±2σ)?",
+  "o": [
+   "10",
+   "20",
+   "5",
+   "40"
+  ],
+  "c": 0,
+  "e": "El intervalo μ ± 2σ mide 4σ de largo: 4σ = 80 − 40 = 40, luego σ = 10."
+ },
+ {
+  "q": "X ~ N(300, 5). ¿Qué proporción de valores está fuera del intervalo [285, 315] (fuera de μ±3σ)?",
+  "o": [
+   "Aproximadamente 0.3%",
+   "Aproximadamente 5%",
+   "Aproximadamente 32%",
+   "Aproximadamente 68%"
+  ],
+  "c": 0,
+  "e": "[285, 315] = 300 ± 15 = μ ± 3σ, que contiene el 99.7%. Fuera queda 100% − 99.7% = 0.3%."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

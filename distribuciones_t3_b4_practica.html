@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2.4 Práctica — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+<style>
+  :root{
+    --navy:#1a2e4a; --navy-light:#2a4468; --teal:#1d7a6b; --teal-light:#e4f2ef;
+    --orange:#e07b3a; --orange-light:#fdeee0; --cream:#f5f2eb; --ink:#2b2b2b;
+    --muted:#6b6f76; --white:#ffffff; --line:#e4e0d6;
+    --red:#c65b4a; --red-light:#fbeae7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Nunito Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap}
+  header.top a{color:#cfd8e6}
+  header.top a:hover{color:#fff}
+  header.top .sep{color:#5c6b82}
+  header.top .current{color:#fff;font-weight:800}
+
+  .wrap{max-width:720px;margin:0 auto;padding:30px 24px 60px}
+
+  .titlebar{text-align:center;margin-bottom:22px}
+  .titlebar .kicker{display:inline-block;background:var(--teal-light);color:var(--teal);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:12px}
+  .titlebar h1{font-size:1.6rem;color:var(--navy);margin:0 0 6px;font-weight:900}
+  .titlebar p{color:var(--muted);margin:0;font-size:.95rem}
+
+  #gate{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;text-align:center}
+  #gate input{width:100%;max-width:340px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;margin:14px 0}
+  .btn{display:inline-block;padding:13px 26px;border-radius:10px;font-weight:800;font-size:.95rem;border:none;cursor:pointer;font-family:inherit}
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0ede4}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  #quiz{display:none}
+  .scoreboard{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px;margin-bottom:18px;font-weight:700;color:var(--navy);font-size:.9rem}
+  .scoreboard .ok{color:var(--teal)}
+  .scoreboard .bad{color:var(--red)}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px}
+  .qtag{display:inline-block;font-weight:800;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:14px}
+  .qtag.teoria{background:var(--teal-light);color:var(--teal)}
+  .qtag.aplicacion{background:var(--orange-light);color:var(--orange)}
+  .qtext{font-size:1.15rem;color:var(--navy);font-weight:700;margin-bottom:20px}
+
+  .opt{display:block;width:100%;text-align:left;background:#fbfbf9;border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-family:inherit;font-size:1rem;cursor:pointer;color:var(--ink)}
+  .opt:hover{border-color:var(--teal)}
+  .opt.correcta{background:var(--teal-light);border-color:var(--teal);color:var(--navy);font-weight:700}
+  .opt.incorrecta{background:var(--red-light);border-color:var(--red);color:#8a3a2e;font-weight:700}
+  .opt:disabled{cursor:default}
+
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:10px;font-size:.92rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--teal-light);color:#12574c}
+  .feedback.bad{background:var(--red-light);color:#8a3a2e}
+
+  .controls{display:flex;justify-content:flex-end;margin-top:20px}
+
+  .nav-bottom{display:flex;justify-content:space-between;margin-top:28px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html">Portal de Distribuciones</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_tema3_intro.html">Tema 2</a>
+  <span class="sep">·</span>
+  <a href="distribuciones_t3_b4_intro.html">Bloque 4</a>
+  <span class="sep">·</span>
+  <span class="current">Práctica libre</span>
+</header>
+
+<div class="wrap">
+  <div class="titlebar">
+    <span class="kicker">Bloque 4 · Práctica libre</span>
+    <h1>Parámetros de la binomial</h1>
+    <p>Ejercicios aleatorios de teoría (media, varianza, desviación típica) y de aplicación (cálculo de μ, σ² y σ). Cada vez que entras, el orden cambia.</p>
+  </div>
+
+  <div id="gate">
+    <p style="margin:0;color:var(--muted)">Escribe tu nombre para empezar (no hay límite de tiempo ni de intentos):</p>
+    <input type="text" id="nombre" placeholder="Nombre y apellidos">
+    <br>
+    <button class="btn on" onclick="empezar()">Empezar a practicar →</button>
+  </div>
+
+  <div id="quiz">
+    <div class="scoreboard">
+      <span id="contador">Pregunta 1</span>
+      <span><span class="ok" id="okcount">0</span> correctas · <span class="bad" id="badcount">0</span> incorrectas</span>
+    </div>
+
+    <div class="qcard">
+      <span class="qtag" id="qtag">Teoría</span>
+      <div class="qtext" id="qtext">—</div>
+      <div id="opciones"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="controls">
+        <button class="btn on" id="btnSiguiente" onclick="siguiente()" disabled>Siguiente pregunta →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-bottom" style="flex-wrap:wrap;gap:12px">
+    <a class="btn ghost" href="index.html">🏠 Portal</a>
+    <a class="btn ghost" href="distribuciones_t3_b4_intro.html">← Volver a la teoría</a>
+    <a class="btn on" href="https://pepivalenzuela.github.io/panel-matematicas/#panel">Formativas en mi panel →</a>
+    <a class="btn ghost" href="distribuciones_t3_b5_intro.html">Bloque 5 →</a>
+  </div>
+</div>
+
+<script>
+// ---------- Banco de preguntas del bloque
+const BANCO_TEORIA = [
+ {
+  "q": "¿Cuál es la fórmula de la media de una binomial X ~ B(n, p)?",
+  "o": [
+   "μ = n·p",
+   "μ = n·p·q",
+   "μ = p/n",
+   "μ = √(np)"
+  ],
+  "c": 0,
+  "e": "En una binomial, μ = E(X) = n·p. n·p·q es la varianza, no la media."
+ },
+ {
+  "q": "¿Cuál es la fórmula de la varianza de una binomial X ~ B(n, p)?",
+  "o": [
+   "σ² = n·p·q",
+   "σ² = n·p",
+   "σ² = p·q",
+   "σ² = √(np)"
+  ],
+  "c": 0,
+  "e": "σ² = Var(X) = n·p·q. Ojo: n·p es la media y √(npq) es la desviación típica."
+ },
+ {
+  "q": "¿Cuál es la fórmula de la desviación típica de una binomial X ~ B(n, p)?",
+  "o": [
+   "σ = √(n·p·q)",
+   "σ = n·p·q",
+   "σ = n·p",
+   "σ = p·q"
+  ],
+  "c": 0,
+  "e": "σ = √(n·p·q): la desviación típica es la raíz cuadrada de la varianza. Sin la raíz tendrías σ²."
+ },
+ {
+  "q": "¿Por qué las fórmulas de la binomial son más rápidas que Σxᵢpᵢ?",
+  "o": [
+   "Porque son fórmulas directas que no requieren construir toda la tabla de distribución",
+   "Porque siempre dan el mismo resultado",
+   "Porque no dependen de p",
+   "No son más rápidas, son iguales"
+  ],
+  "c": 0,
+  "e": "Con μ = np y σ² = npq obtienes el centro y la dispersión directamente, sin construir la tabla completa de P(X = k) y hacer Σxᵢpᵢ. El resultado es el mismo; lo que ganas es tiempo."
+ },
+ {
+  "q": "Si n=20 y p=0.5, ¿cuánto vale μ?",
+  "o": [
+   "10",
+   "20",
+   "0.5",
+   "5"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 20·0.5 = 10."
+ },
+ {
+  "q": "¿Puede la media de una binomial no ser un número entero?",
+  "o": [
+   "Sí, por ejemplo con n=5, p=0.3, μ=1.5",
+   "No, siempre es entera",
+   "Solo si n es par",
+   "Solo si p=0.5"
+  ],
+  "c": 0,
+  "e": "Sí: la media no tiene por qué ser un valor que X pueda tomar. Con n = 5 y p = 0.3, μ = 5·0.3 = 1.5."
+ },
+ {
+  "q": "¿Qué le pasa a σ² si p=0 o p=1?",
+  "o": [
+   "σ²=0, porque no hay incertidumbre",
+   "σ² se hace infinita",
+   "σ²=n",
+   "σ² no se puede calcular"
+  ],
+  "c": 0,
+  "e": "Si p = 0, q = 1 − p = 1, y si p = 1, q = 0. En los dos casos σ² = npq = 0: el resultado es seguro y no hay dispersión."
+ },
+ {
+  "q": "¿Para qué valor de p es máxima la varianza de una binomial, con n fijo?",
+  "o": [
+   "p=0.5",
+   "p=0",
+   "p=1",
+   "p=0.25"
+  ],
+  "c": 0,
+  "e": "p·q = p(1 − p) es máximo en p = 0.5 (vale 0.25), así que σ² = npq también. Es cuando hay más incertidumbre en cada prueba."
+ },
+ {
+  "q": "¿Es simétrica la distribución binomial cuando p=0.5?",
+  "o": [
+   "Sí",
+   "No, nunca es simétrica",
+   "Solo si n=1",
+   "Solo si n es impar"
+  ],
+  "c": 0,
+  "e": "Sí: con p = q = 0.5, P(X = k) = P(X = n − k) para cualquier n, así que la distribución es simétrica respecto a μ = n/2."
+ },
+ {
+  "q": "Si p está muy cerca de 0, ¿hacia dónde se concentra la distribución?",
+  "o": [
+   "Hacia valores bajos de X (cerca de 0)",
+   "Hacia valores altos de X (cerca de n)",
+   "Se reparte uniformemente",
+   "Hacia el valor n/2"
+  ],
+  "c": 0,
+  "e": "Si p es casi 0, los éxitos son raros y μ = np es pequeña: la probabilidad se acumula en valores bajos de X, cerca de 0."
+ },
+ {
+  "q": "¿Qué relación hay entre p=0.2 y p=0.8 en cuanto a la forma de la distribución?",
+  "o": [
+   "Son formas espejo una de la otra (intercambiando éxito y fracaso)",
+   "Son exactamente iguales",
+   "No tienen ninguna relación",
+   "p=0.8 siempre tiene más dispersión"
+  ],
+  "c": 0,
+  "e": "Intercambiar éxito y fracaso convierte B(n, 0.2) en B(n, 0.8): P(X = k) con p = 0.2 vale lo mismo que P(X = n − k) con p = 0.8. Las formas son simétricas (espejo), con la misma σ."
+ },
+ {
+  "q": "Si aumenta n (con p fijo), ¿qué le pasa a la media μ=np?",
+  "o": [
+   "Aumenta proporcionalmente",
+   "Disminuye",
+   "No cambia",
+   "Se hace negativa"
+  ],
+  "c": 0,
+  "e": "μ = np: si n se multiplica por un número y p no cambia, μ se multiplica por ese mismo número."
+ },
+ {
+  "q": "¿Puede la desviación típica de una binomial ser mayor que n?",
+  "o": [
+   "No: como pq ≤ 0.25, σ=√(npq) ≤ √n/2, que nunca supera a n",
+   "Sí, siempre lo es",
+   "Solo si p=0.5",
+   "Solo si n &lt; 10"
+  ],
+  "c": 0,
+  "e": "Como pq ≤ 0.25, σ = √(npq) ≤ √n/2, y √n/2 nunca supera a n (para n ≥ 1). Por ejemplo, con n = 100, σ vale como mucho 5."
+ },
+ {
+  "q": "Si conoces μ y n de una binomial, ¿puedes hallar p?",
+  "o": [
+   "Sí, p=μ/n",
+   "No, hacen falta más datos",
+   "Sí, p=n/μ",
+   "No, p es siempre 0.5"
+  ],
+  "c": 0,
+  "e": "Despejando en μ = n·p queda p = μ/n. Por ejemplo, con μ = 5 y n = 20, p = 0.25."
+ },
+ {
+  "q": "¿Qué significa una desviación típica muy pequeña en una binomial?",
+  "o": [
+   "Que los resultados están muy concentrados alrededor de la media",
+   "Que la media es muy grande",
+   "Que n es muy pequeño siempre",
+   "Que p=0.5 siempre"
+  ],
+  "c": 0,
+  "e": "σ mide cuánto se alejan los valores de la media: si es pequeña, la mayoría de resultados quedan muy cerca de μ."
+ },
+ {
+  "q": "Si p &gt; 0, ¿qué podemos decir del valor de q en una binomial?",
+  "o": [
+   "Es menor que 1: puede acercarse a 1, pero no llegar a valer exactamente 1",
+   "Siempre vale 0.5",
+   "Puede valer exactamente 1",
+   "No puede superar 0.5"
+  ],
+  "c": 0,
+  "e": "q = 1 − p: si p &gt; 0, entonces q &lt; 1. Puede acercarse mucho a 1 (si p es muy pequeña), pero nunca llega a valer exactamente 1."
+ }
+];
+
+const BANCO_APLICACION = [
+ {
+  "q": "Para X ~ B(10, 0.3), calcula μ",
+  "o": [
+   "3",
+   "2.1",
+   "10",
+   "0.3"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 10·0.3 = 3. 2.1 sería la varianza."
+ },
+ {
+  "q": "Para X ~ B(10, 0.3), calcula σ²",
+  "o": [
+   "2.1",
+   "3",
+   "1.449",
+   "0.7"
+  ],
+  "c": 0,
+  "e": "σ² = n·p·q = 10·0.3·0.7 = 2.1. 1.449 es σ, no σ²."
+ },
+ {
+  "q": "Para X ~ B(10, 0.3), calcula σ",
+  "o": [
+   "≈1.449",
+   "2.1",
+   "3",
+   "≈1.049"
+  ],
+  "c": 0,
+  "e": "σ = √(npq) = √(10·0.3·0.7) = √2.1 ≈ 1.449. No te quedes en 2.1, que es la varianza."
+ },
+ {
+  "q": "Para X ~ B(50, 0.2), calcula μ",
+  "o": [
+   "10",
+   "8",
+   "50",
+   "0.2"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 50·0.2 = 10. 8 sería n·p·q, es decir, la varianza."
+ },
+ {
+  "q": "Para X ~ B(50, 0.2), calcula σ",
+  "o": [
+   "≈2.828",
+   "8",
+   "10",
+   "≈1.265"
+  ],
+  "c": 0,
+  "e": "σ = √(50·0.2·0.8) = √8 ≈ 2.828. 8 es la varianza y 10 la media."
+ },
+ {
+  "q": "Para X ~ B(25, 0.4), calcula μ y σ²",
+  "o": [
+   "μ=10, σ²=6",
+   "μ=6, σ²=10",
+   "μ=10, σ²=10",
+   "μ=25, σ²=6"
+  ],
+  "c": 0,
+  "e": "μ = 25·0.4 = 10 y σ² = 25·0.4·0.6 = 6."
+ },
+ {
+  "q": "Si X ~ B(n, 0.5) tiene media 12, calcula n",
+  "o": [
+   "24",
+   "12",
+   "6",
+   "48"
+  ],
+  "c": 0,
+  "e": "μ = n·p, así que 12 = n·0.5 y n = 12/0.5 = 24."
+ },
+ {
+  "q": "Si X ~ B(20, p) tiene media 5, calcula p",
+  "o": [
+   "0.25",
+   "0.20",
+   "4",
+   "0.5"
+  ],
+  "c": 0,
+  "e": "μ = n·p, así que 5 = 20·p y p = 5/20 = 0.25."
+ },
+ {
+  "q": "Para X ~ B(8, 0.75), calcula μ",
+  "o": [
+   "6",
+   "8",
+   "0.75",
+   "2"
+  ],
+  "c": 0,
+  "e": "μ = n·p = 8·0.75 = 6."
+ },
+ {
+  "q": "Para X ~ B(8, 0.75), calcula σ",
+  "o": [
+   "≈1.225",
+   "6",
+   "1.5",
+   "≈2.449"
+  ],
+  "c": 0,
+  "e": "σ = √(8·0.75·0.25) = √1.5 ≈ 1.225. 1.5 es la varianza, no σ."
+ },
+ {
+  "q": "Si X ~ B(100, 0.5), calcula σ",
+  "o": [
+   "5",
+   "25",
+   "50",
+   "10"
+  ],
+  "c": 0,
+  "e": "σ = √(100·0.5·0.5) = √25 = 5. 25 es σ² y 50 es μ."
+ },
+ {
+  "q": "Un examen de 40 preguntas tipo test con 5 opciones. Si respondes al azar, calcula el número esperado de aciertos",
+  "o": [
+   "8",
+   "40",
+   "5",
+   "0.2"
+  ],
+  "c": 0,
+  "e": "X ~ B(40, 0.2), porque 1 de cada 5 opciones es correcta. Aciertos esperados: μ = 40·0.2 = 8."
+ },
+ {
+  "q": "Un examen de 40 preguntas tipo test con 5 opciones se responde al azar. Calcula la desviación típica del número de aciertos",
+  "o": [
+   "≈2.530",
+   "8",
+   "≈6.400",
+   "≈1.265"
+  ],
+  "c": 0,
+  "e": "σ = √(40·0.2·0.8) = √6.4 ≈ 2.530. 6.4 es la varianza."
+ },
+ {
+  "q": "El 15% de los pedidos de una tienda se devuelven. De 60 pedidos, calcula el número esperado de devoluciones",
+  "o": [
+   "9",
+   "60",
+   "0.15",
+   "15"
+  ],
+  "c": 0,
+  "e": "X ~ B(60, 0.15): μ = 60·0.15 = 9 devoluciones esperadas."
+ },
+ {
+  "q": "El 15% de los pedidos de una tienda se devuelven. De 60 pedidos, calcula la desviación típica del número de devoluciones",
+  "o": [
+   "≈2.766",
+   "9",
+   "≈7.650",
+   "≈1.383"
+  ],
+  "c": 0,
+  "e": "σ = √(60·0.15·0.85) = √7.65 ≈ 2.766. 7.65 es la varianza."
+ },
+ {
+  "q": "Si X ~ B(30, 0.1), calcula μ, σ² y σ",
+  "o": [
+   "μ=3, σ²=2.7, σ≈1.643",
+   "μ=3, σ²=3, σ=3",
+   "μ=30, σ²=2.7, σ≈1.643",
+   "μ=3, σ²=27, σ≈5.196"
+  ],
+  "c": 0,
+  "e": "μ = 30·0.1 = 3; σ² = 30·0.1·0.9 = 2.7; σ = √2.7 ≈ 1.643."
+ }
+];
+
+let orden = [];
+let idx = 0;
+let ok = 0, bad = 0;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function empezar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Escribe tu nombre para empezar.'); return; }
+  document.getElementById('gate').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  generarSecuencia();
+  mostrarPregunta();
+}
+
+function generarSecuencia(){
+  const todas = shuffle(
+    BANCO_TEORIA.map(x=>({...x,tipo:'teoria'})).concat(
+    BANCO_APLICACION.map(x=>({...x,tipo:'aplicacion'})))
+  );
+  orden = todas;
+  idx = 0; ok = 0; bad = 0;
+}
+
+function mostrarPregunta(){
+  if(idx >= orden.length){ generarSecuencia(); }
+  const item = orden[idx];
+  document.getElementById('contador').textContent = `Pregunta ${idx+1}`;
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  const tag = document.getElementById('qtag');
+  tag.textContent = item.tipo === 'teoria' ? 'Teoría' : 'Aplicación';
+  tag.className = 'qtag ' + item.tipo;
+  document.getElementById('qtext').innerHTML = item.q;
+
+  const opciones = shuffle(item.o.map((texto,i)=>({texto, esCorrecta:i===item.c})));
+  const cont = document.getElementById('opciones');
+  cont.innerHTML='';
+  opciones.forEach(op=>{
+    const btn = document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML = op.texto;
+    btn.onclick = ()=>responder(btn, op.esCorrecta, opciones, cont);
+    cont.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('btnSiguiente').disabled = true;
+  if(window.MathJax){ MathJax.typesetClear([cont, document.getElementById('qtext')]); MathJax.typesetPromise([cont, document.getElementById('qtext')]); }
+}
+
+function responder(btnPulsado, esCorrecta, opciones, cont){
+  const botones = cont.querySelectorAll('.opt');
+  botones.forEach(b=>b.disabled=true);
+  botones.forEach((b,i)=>{
+    if(opciones[i].esCorrecta) b.classList.add('correcta');
+  });
+  if(!esCorrecta) btnPulsado.classList.add('incorrecta');
+
+  const fb = document.getElementById('feedback');
+  const exp = orden[idx] && orden[idx].e ? '<div style="margin-top:8px;font-weight:400">💡 ' + orden[idx].e + '</div>' : '';
+  if(esCorrecta){
+    ok++;
+    fb.innerHTML = '<b>✓ Correcto.</b>' + exp;
+    fb.className = 'feedback show ok';
+  } else {
+    bad++;
+    fb.innerHTML = '<b>✗ No es correcto. La respuesta correcta está marcada en verde.</b>' + exp;
+    fb.className = 'feedback show bad';
+  }
+  if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([fb]).catch(()=>{}); }
+  document.getElementById('okcount').textContent = ok;
+  document.getElementById('badcount').textContent = bad;
+  document.getElementById('btnSiguiente').disabled = false;
+}
+
+function siguiente(){
+  idx++;
+  mostrarPregunta();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tema 2 — Distribución binomial · Las Chapas ECOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1a2e4a;
+    --navy-light:#2a4468;
+    --teal:#1d7a6b;
+    --teal-light:#e4f2ef;
+    --orange:#e07b3a;
+    --orange-light:#fdeee0;
+    --cream:#f5f2eb;
+    --ink:#2b2b2b;
+    --muted:#6b6f76;
+    --white:#ffffff;
+    --line:#e4e0d6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Nunito Sans',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  h1,h2,h3,.brand{font-family:'Nunito',sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  header.top{
+    background:var(--navy);
+    color:var(--white);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header.top .brand{font-weight:800;font-size:1.05rem;letter-spacing:.2px}
+  header.top .brand span{color:var(--orange)}
+  header.top .tag{font-size:.8rem;color:#c7d0dd;font-weight:600}
+
+  .hero{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 20px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    display:inline-block;
+    background:var(--orange-light);
+    color:var(--orange);
+    font-weight:800;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:6px 14px;
+    border-radius:100px;
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:2.6rem;
+    font-weight:900;
+    color:var(--navy);
+    margin:0 0 14px;
+    letter-spacing:-.02em;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--teal);
+  }
+  .hero p.sub{
+    font-size:1.08rem;
+    color:var(--muted);
+    max-width:680px;
+    margin:0 auto;
+  }
+
+  .motivante{
+    max-width:820px;
+    margin:36px auto 0;
+    padding:0 24px;
+  }
+  .card-ib{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-left:6px solid var(--teal);
+    border-radius:14px;
+    padding:26px 28px;
+    box-shadow:0 2px 10px rgba(26,46,74,.05);
+  }
+  .card-ib h3{
+    margin:0 0 10px;
+    color:var(--teal);
+    font-size:1.02rem;
+    font-weight:800;
+  }
+  .card-ib p{margin:0 0 12px;color:var(--ink)}
+  .card-ib p:last-child{margin-bottom:0}
+  .card-ib .indagacion{
+    background:var(--teal-light);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-top:14px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .conceptos{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:16px;
+  }
+  .conceptos span{
+    background:var(--navy);
+    color:#fff;
+    font-size:.78rem;
+    font-weight:700;
+    padding:5px 12px;
+    border-radius:100px;
+  }
+
+  section.bloques{
+    max-width:1040px;
+    margin:52px auto;
+    padding:0 24px;
+  }
+  section.bloques h2{
+    text-align:center;
+    color:var(--navy);
+    font-size:1.5rem;
+    margin-bottom:6px;
+  }
+  section.bloques p.lead{
+    text-align:center;
+    color:var(--muted);
+    margin:0 auto 34px;
+    max-width:560px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:20px;
+  }
+  .bloque-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .bloque-card.activo:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(26,46,74,.1);
+  }
+  .bloque-card .visual{
+    height:96px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-light));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:1.3rem;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .bloque-card.pendiente .visual{
+    background:linear-gradient(135deg,#cfc9ba,#e4e0d3);
+    color:#9b968a;
+  }
+  .bloque-card .body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column}
+  .bloque-card .num{
+    color:var(--orange);
+    font-weight:800;
+    font-size:.78rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  .bloque-card h3{margin:0 0 8px;color:var(--navy);font-size:1.15rem}
+  .bloque-card p{color:var(--muted);font-size:.92rem;margin:0 0 16px;flex:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .tags span{
+    background:var(--teal-light);
+    color:var(--teal);
+    font-size:.72rem;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:100px;
+  }
+  .btn{
+    display:inline-block;
+    text-align:center;
+    padding:11px 18px;
+    border-radius:10px;
+    font-weight:800;
+    font-size:.92rem;
+  }
+  .btn.on{background:var(--teal);color:#fff}
+  .btn.on:hover{background:#166357}
+  .btn.off{background:#ece9df;color:#a6a196;cursor:default}
+
+  footer{
+    text-align:center;
+    padding:36px 24px 44px;
+    color:var(--muted);
+    font-size:.85rem;
+    border-top:1px solid var(--line);
+    margin-top:20px;
+  }
+  .esquema{
+    max-width:1100px;
+    margin:44px auto 0;
+    padding:0 24px;
+  }
+  .esquema .card-esquema{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+  }
+  .esquema h3{
+    color:var(--navy);
+    font-size:1.15rem;
+    margin:0 0 6px;
+  }
+  .esquema p.nota{
+    color:var(--muted);
+    font-size:.9rem;
+    margin:0 0 18px;
+  }
+  .esquema img{
+    max-width:100%;
+    height:auto;
+    border-radius:10px;
+    border:1px solid var(--line);
+    cursor:zoom-in;
+  }
+</style>
+<body>
+
+<header class="top" style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;flex-wrap:wrap;padding:14px 24px">
+  <a href="index.html" style="color:#cfd8e6">Portal de Distribuciones</a>
+  <span style="color:#5c6b82">·</span>
+  <span style="color:#fff;font-weight:800">Tema 2</span>
+</header>
+
+<div class="hero">
+  <span class="eyebrow">Tema 2</span>
+  <h1>Distribución <em>binomial</em></h1>
+  <p class="sub">Una empresa sabe que el 20% de quienes ven su anuncio contratan el servicio. Si lo ven 20 personas, ¿cuál es la probabilidad de que se contrate exactamente 10 veces? La fórmula que responde a esto se construye a partir de simples combinaciones de "éxito" y "fracaso".</p>
+</div>
+
+<div class="motivante">
+  <div class="card-ib">
+    <h3>🌍 Problema motivante</h3>
+    <p>Lanzas un dado 3 veces y cuentas cuántos seises salen. Solo hay 8 resultados posibles, pero fíjate: hay 1 camino con 3 éxitos, 3 caminos con 2 éxitos, 3 con 1 éxito y 1 con 0 éxitos. Esos números — 1, 3, 3, 1 — ya los conoces del Triángulo de Pascal.</p>
+    <p><strong>¿Por qué el conteo de caminos de un árbol de probabilidad coincide exactamente con el Triángulo de Pascal?</strong></p>
+    <div class="indagacion">
+      🔍 Pregunta de indagación · Si repites un experimento de "éxito o fracaso" n veces, ¿de cuántas formas distintas puedes obtener k éxitos? ¿Por qué esa cuenta no depende del orden en que ocurran?
+    </div>
+    <div class="conceptos">
+      <span>Patrones</span><span>Cantidad</span>
+    </div>
+  </div>
+</div>
+
+<section class="bloques">
+  <h2>📚 Bloques del tema</h2>
+  <p class="lead">Cada bloque combina teoría, ejemplos resueltos e investigación guiada. El hilo del dado (3 lanzamientos) conecta los bloques 2 y 3.</p>
+
+  <div class="grid">
+
+    <div class="bloque-card activo">
+      <div class="visual">(m sobre n)</div>
+      <div class="body">
+        <div class="num">Bloque 1</div>
+        <h3>Números combinatorios</h3>
+        <p>Repaso de factorial, número combinatorio y el Triángulo de Pascal.</p>
+        <div class="tags"><span>Factorial</span><span>Triángulo de Pascal</span></div>
+        <a class="btn on" href="distribuciones_t3_b1_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">Éxito / Fracaso</div>
+      <div class="body">
+        <div class="num">Bloque 2</div>
+        <h3>El experimento de Bernoulli</h3>
+        <p>Las tres condiciones que debe cumplir un experimento, con el ejemplo del dado.</p>
+        <div class="tags"><span>Bernoulli</span><span>Árbol</span></div>
+        <a class="btn on" href="distribuciones_t3_b2_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">X~B(n,p)</div>
+      <div class="body">
+        <div class="num">Bloque 3</div>
+        <h3>La distribución binomial</h3>
+        <p>La fórmula P(X=k) y su aplicación a un problema de marketing real.</p>
+        <div class="tags"><span>Fórmula</span><span>P(X=k)</span></div>
+        <a class="btn on" href="distribuciones_t3_b3_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">μ=np</div>
+      <div class="body">
+        <div class="num">Bloque 4</div>
+        <h3>Parámetros</h3>
+        <p>Media, varianza y desviación típica de una binomial, con fórmulas directas.</p>
+        <div class="tags"><span>Media</span><span>Desv. típica</span></div>
+        <a class="btn on" href="distribuciones_t3_b4_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+    <div class="bloque-card activo">
+      <div class="visual">📋</div>
+      <div class="body">
+        <div class="num">Bloque 5</div>
+        <h3>Ejercicios de aplicación</h3>
+        <p>Control de calidad y fraude fiscal — problemas reales resueltos paso a paso.</p>
+        <div class="tags"><span>Aplicación</span></div>
+        <a class="btn on" href="distribuciones_t3_b5_intro.html">Entrar →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  Las Chapas ECOS · Departamento de Matemáticas · 2º Bachillerato
+</footer>
+
+</body>
+</html>
